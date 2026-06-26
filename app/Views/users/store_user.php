@@ -1,44 +1,39 @@
 <?php
-require_once __DIR__ . '/../../../config/database.php';
+
+require_once '../../../config/database.php';
+require_once '../../../config/mail.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $firstname = trim($_POST['firstname'] ?? '');
-    $lastname  = trim($_POST['lastname'] ?? '');
-    $email     = trim($_POST['email'] ?? '');
-    $phone     = trim($_POST['phone'] ?? '');
-    $department = trim($_POST['department'] ?? '');
-    $cohort    = trim($_POST['cohort'] ?? '');
-    $role      = trim($_POST['role'] ?? 'etudiant');
-    $password  = $_POST['password'] ?? '';
+   
+    $firstname  = $_POST['firstname'] ;
+    $lastname   = $_POST['lastname'] ;
+    $email      = $_POST['email'] ;
+    $phone      = $_POST['phone'] ;
+    $department = $_POST['department'] ;
+    $cohort     = $_POST['cohort'] ;
+    $role       = $_POST['role'] ;
 
-    // Vérification des champs obligatoires
-    if (
-        empty($firstname) ||
-        empty($lastname) ||
-        empty($email) ||
-        empty($password)
-    ) {
+  
+    if (empty($firstname) || empty($lastname) || empty($email)) {
         die("Veuillez remplir tous les champs obligatoires.");
     }
 
-    // Hash du mot de passe
-    $password_hash = password_hash($password, PASSWORD_DEFAULT);
+  
+    $token = bin2hex(random_bytes(32));
 
-    // Gestion de la photo
+   
     $photoPath = null;
 
-    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
+    if (!empty($_FILES['photo']['name'])) {
 
         $uploadDir = __DIR__ . '/../../../public/uploads/';
 
-        // Créer le dossier uploads s'il n'existe pas
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
 
         $extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
-
         $fileName = uniqid() . '.' . $extension;
 
         $destination = $uploadDir . $fileName;
@@ -48,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    try {
 
         $sql = "INSERT INTO users
         (
@@ -59,13 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             department,
             cohort,
             role,
-            password_hash,
-            photo
+            photo,
+            activation_token,
+            is_active
         )
-        VALUES
-        (
-            ?, ?, ?, ?, ?, ?, ?, ?, ?
-        )";
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $pdo->prepare($sql);
 
@@ -77,17 +69,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $department,
             $cohort,
             $role,
-            $password_hash,
-            $photoPath
+            $photoPath,
+            $token,
+            0 
         ]);
 
+        
+        sendActivationMail(
+            $email,
+            $firstname . " " . $lastname,
+            $token
+        );
+
+       
         header("Location: utilisateur.php");
         exit;
 
-    } catch (PDOException $e) {
-
-        die("Erreur : " . $e->getMessage());
-
-    }
+    
 }
-?>

@@ -1,3 +1,14 @@
+<?php
+require_once __DIR__ . '/../../../config/database.php';
+
+$stmt = $pdo->query("
+    SELECT *
+    FROM users
+    ORDER BY created_at DESC
+");
+
+$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,11 +47,6 @@
             <button class="bg-white border px-4 py-3 rounded-xl">
                 <i class="bi bi-funnel"></i>
                 Filtres
-            </button>
-
-            <button class="bg-white border px-4 py-3 rounded-xl">
-                <i class="bi bi-download"></i>
-                Exporter
             </button>
 
         </div>
@@ -191,74 +197,105 @@
        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
     <!-- Card Présence -->
-    <div class="bg-white border rounded-2xl p-5 shadow hover:shadow-lg transition">
+     <?php
+     $date = date('Y-m-d');
 
-        <div class="flex justify-between items-center mb-4">
+$stmt = $pdo->prepare("
+    SELECT check_in, check_out, status
+    FROM attendances
+    WHERE user_id = ? AND date = ?
+");
 
-            <div class="flex items-center gap-3">
+$attStmt = $pdo->prepare("
+    SELECT check_in, check_out, status
+    FROM attendances
+    WHERE user_id = ? AND date = ?
+");
+     ?>
+    <?php foreach ($users as $user): ?>
 
-                <img src="https://i.pravatar.cc/100?img=1"
-                     class="w-14 h-14 rounded-full object-cover">
+<div class="bg-white border rounded-2xl p-5 shadow hover:shadow-lg transition">
 
-                <div>
-                    <h3 class="font-bold text-lg">Fatou Sow</h3>
-                    <p class="text-sm text-gray-500">
-                        Développement Web
-                    </p>
-                </div>
+    <div class="flex justify-between items-center mb-4">
 
-            </div>
+        <div class="flex items-center gap-3">
 
-            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
-                Présent
-            </span>
+            <img src="../../../public/<?= $user['photo'] ?>"
+                 class="w-14 h-14 rounded-full object-cover">
 
-        </div>
+            <div>
+                <h3 class="font-bold text-lg">
+                    <?= $user['firstname'] . ' ' . $user['lastname'] ?>
+                </h3>
 
-        <div class="space-y-3 text-sm">
-            <div class="flex justify-between">
-                <span class="text-gray-500">
-                    <i class="bi bi-people-fill"></i> Cohorte
-                </span>
-                <span class="font-semibold">Cohorte 1</span>
-            </div>
-
-            <div class="flex justify-between">
-                <span class="text-gray-500">
-                    <i class="bi bi-clock"></i> Arrivée
-                </span>
-                <span class="font-semibold">08:05</span>
-            </div>
-
-            <div class="flex justify-between">
-                <span class="text-gray-500">
-                    <i class="bi bi-box-arrow-right"></i> Départ
-                </span>
-                <span class="font-semibold">17:00</span>
-            </div>
-
-            <div class="flex justify-between">
-                <span class="text-gray-500">
-                    <i class="bi bi-hourglass"></i> Durée
-                </span>
-                <span class="font-semibold">08h 55m</span>
+                <p class="text-sm text-gray-500">
+                    <?= $user['department'] ?>
+                </p>
             </div>
 
         </div>
 
-        <div class="mt-5 flex justify-end gap-2">
-
-            <button class="bg-blue-100 text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-200">
-                <i class="bi bi-eye"></i>
-            </button>
-
-            <button class="bg-green-100 text-green-600 px-3 py-2 rounded-lg hover:bg-green-200">
-                <i class="bi bi-pencil-square"></i>
-            </button>
-
-        </div>
+        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+            Présent
+        </span>
 
     </div>
+
+    <div class="space-y-3 text-sm">
+
+        <div class="flex justify-between">
+            <span class="text-gray-500">
+                <i class="bi bi-people-fill text-orange-600"></i>  Cohorte
+            </span>
+            <span class="font-semibold">
+                <?= $user['cohort'] ?>
+            </span>
+        </div>
+
+        <div class="flex justify-between">
+            <span class="text-gray-500">
+                <i class="bi bi-envelope text-blue-600"></i>  Email
+            </span>
+            <span class="font-semibold">
+                <?= $user['email'] ?>
+            </span>
+        </div>
+
+        <div class="flex justify-between">
+            <span class="text-gray-500">
+                <i class="bi bi-telephone text-green-600"></i>  Téléphone
+            </span>
+            <span class="font-semibold">
+                <?= $user['phone'] ?>
+            </span>
+        </div>
+        <div class="flex justify-between"> 
+            <span class="text-gray-500"> <i class="bi bi-clock text-green-600"></i> Arrivée </span> 
+            <span class="font-semibold"><?= $attendance['check_in'] ?? '--:--' ?></span>
+        </div> 
+        <div class="flex justify-between"> 
+            <span class="text-gray-500"> <i class="bi bi-box-arrow-right text-red-600"></i> Départ </span> 
+            <span class="font-semibold"><?= $attendance['check_out'] ?? '--:--' ?></span>
+        </div>
+        
+
+    </div>
+
+    <div class="mt-5 flex justify-end gap-2">
+
+        <button class="bg-blue-100 text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-200">
+            <i class="bi bi-eye"></i>
+        </button>
+
+        <button class="bg-green-100 text-green-600 px-3 py-2 rounded-lg hover:bg-green-200">
+            <i class="bi bi-pencil-square"></i>
+        </button>
+
+    </div>
+
+</div>
+
+<?php endforeach; ?>
 
 </div>
 
@@ -267,3 +304,4 @@
 </main>
 </body>
 </html>
+

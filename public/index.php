@@ -5,10 +5,8 @@ require_once '../app/Controllers/UserController.php';
 
 require_once __DIR__ . '/../app/routes/web.php';
 
-// Controller
 $userController = new UserController($pdo);
 
-// récupérer les users
 $users = $userController->index();
 
 ?>
