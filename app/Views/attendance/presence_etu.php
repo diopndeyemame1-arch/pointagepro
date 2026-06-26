@@ -260,5 +260,6 @@ function pointerEntree() {
     );
 }
 </script>
+<!--bbbbbbbbbbbbbbbbbbbbb-->
 </body>
 </html>
