@@ -32,12 +32,6 @@ $page = basename($_SERVER['PHP_SELF']);
             Présences
         </a>
 
-        <a href="../leaves/conge.php"
-           class="flex items-center gap-3 px-4 py-3 rounded-xl <?= ($page == 'conge.php') ? 'bg-green-600' : 'hover:bg-white/10' ?>">
-            <i class="bi bi-airplane"></i>
-            Congés
-        </a>
-
         <a href="../absence/absence.php"
            class="flex items-center gap-3 px-4 py-3 rounded-xl <?= ($page == 'absence.php') ? 'bg-green-600' : 'hover:bg-white/10' ?>">
             <i class="bi bi-person-x"></i>
@@ -99,11 +93,7 @@ $page = basename($_SERVER['PHP_SELF']);
             Mes Absences
         </a>
 
-        <a href="../leaves/conge_etu.php"
-           class="flex items-center gap-3 px-4 py-3 rounded-xl <?= ($page == 'conge_etu.php') ? 'bg-green-600' : 'hover:bg-white/10' ?>">
-            <i class="bi bi-airplane"></i>
-            Mes Congés
-        </a>
+        
 
         <a href="../publicHoliday/publicHoliday.php"
            class="flex items-center gap-3 px-4 py-3 rounded-xl <?= ($page == 'publicHoliday.php') ? 'bg-green-600' : 'hover:bg-white/10' ?>">
