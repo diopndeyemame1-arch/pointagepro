@@ -75,14 +75,9 @@ $stmt->execute([
     ✔
 </div>
 
-<h2 class="text-2xl font-bold mb-3">
-Compte activé
-</h2>
+<h2 class="text-2xl font-bold mb-3">Compte activé</h2>
 
-<p class="text-gray-600 mb-6">
-Votre compte a été activé avec succès.
-Vous pouvez maintenant vous connecter.
-</p>
+<p class="text-gray-600 mb-6">Votre compte a été activé avec succès.Vous pouvez maintenant vous connecter.</p>
 
 <a href="../auth/login.php"
    class="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-xl inline-block">
