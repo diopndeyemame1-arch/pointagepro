@@ -10,7 +10,7 @@ class ProfilController
     {
         $this->model = $model;
     }
-
+//coumba
     
     public function index($id)
     {

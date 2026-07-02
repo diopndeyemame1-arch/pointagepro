@@ -18,6 +18,7 @@ class ProfilModel
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    //coumba
 
     public function updateUser($id, $prenom, $nom, $email, $telephone)
     {
