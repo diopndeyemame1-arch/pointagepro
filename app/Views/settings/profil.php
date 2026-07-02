@@ -66,7 +66,7 @@
                         Prénom
                     </label>
                     <input type="text"
-                           value="Binta"
+                          value="<?= $user['prenom'] ?? '' ?>"
                            class="w-full border rounded-xl px-4 py-3 mt-2">
                 </div>
 
@@ -76,7 +76,7 @@
                         Nom
                     </label>
                     <input type="text"
-                           value="Ndiaye"
+                           value="<?= $user['nom'] ?? '' ?>"
                            class="w-full border rounded-xl px-4 py-3 mt-2">
                 </div>
 
@@ -86,7 +86,7 @@
                         Email
                     </label>
                     <input type="email"
-                           value="ndiaye@gmail.com"
+                           value="<?= $user['email'] ?? '' ?>"
                            class="w-full border rounded-xl px-4 py-3 mt-2">
                 </div>
 
@@ -96,7 +96,7 @@
                         Téléphone
                     </label>
                     <input type="text"
-                           value="77 123 45 67"
+                          value="<?= $user['telephone'] ?? '' ?>"
                            class="w-full border rounded-xl px-4 py-3 mt-2">
                 </div>
 
@@ -121,7 +121,7 @@
                     Departement
                 </label>
                 <input type="text"
-                       value="Developpement Web"
+                        value="<?= $user['department_id'] ?? '' ?>"
                        class="w-full border rounded-xl px-4 py-3 mt-2 " readonly>
             </div>
 
@@ -130,7 +130,7 @@
                     Cohorte
                 </label>
                 <input type="text"
-                       value="Cohorte 1"
+                      value="<?= $user['cohort_id'] ?? '' ?>"
                        class="w-full border rounded-xl px-4 py-3 mt-2" readonly>
             </div>
 
@@ -139,7 +139,7 @@
                     Matricule
                 </label>
                 <input type="text"
-                       value="ETU001"
+                      value="<?= $user['id'] ?? '' ?>"
                        class="w-full border rounded-xl px-4 py-3 mt-2" readonly>
             </div>
 

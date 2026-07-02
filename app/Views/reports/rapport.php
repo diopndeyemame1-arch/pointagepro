@@ -35,10 +35,26 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
 
             <div class="flex gap-3">
 
-                <button class="bg-white border px-4 py-3 rounded-xl">
-                    <i class="bi bi-calendar3"></i>
-                    01 avril 2026 - 30 avril 2026
-                </button>
+                 <select class="bg-white border rounded-xl px-4 py-3">
+                <option>Tous les départements</option>
+                <option value="">Developpement Web</option>
+                <option value="">Marketing Digital</option>
+                <option value="">Bureautique</option>
+            </select>
+
+            <select class="bg-white border rounded-xl px-4 py-3">
+                <option>Tous les statuts</option>
+                <option value="present">Presences</option>
+                <option value="absent">Absences</option>
+                <option value="retard">En retard</option>
+            </select>
+            <select class="bg-white border rounded-xl px-4 py-3">
+                <option>Toutes les cohortes</option>
+                <option>Cohorte 1</option>
+                <option>Cohorte 2</option>
+                <option>Cohorte 3</option>
+                <option>Cohorte 4</option>
+            </select>
 
                 <button class="bg-white border px-4 py-3 rounded-xl">
                     <i class="bi bi-funnel"></i>
