@@ -1,6 +1,6 @@
 <?php
 
-require_once '../../../config/database.php';
+// require_once '../../../config/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     header("Location: utilisateur.php");
@@ -79,7 +79,7 @@ $stmt->execute([
 
 <p class="text-gray-600 mb-6">Votre compte a été activé avec succès.Vous pouvez maintenant vous connecter.</p>
 
-<a href="../auth/login.php"
+<a href="../../public/index.php?page=login"
    class="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-xl inline-block">
 Se connecter
 </a>

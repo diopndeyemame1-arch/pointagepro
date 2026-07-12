@@ -1,5 +1,7 @@
 <?php
 
+date_default_timezone_set('Africa/Dakar');
+
 $host = "localhost";
 $port = "5432";
 $dbname = "projet_pointage";
@@ -15,6 +17,7 @@ try {
 
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    $pdo->exec("SET TIME ZONE 'Africa/Dakar'");
 
 } catch (PDOException $e) {
     die("❌ Erreur connexion base de données : " . $e->getMessage());

@@ -9,68 +9,134 @@ class Attendance
         $this->pdo = $pdo;
     }
 
-    // 🔹 Liste des présences avec infos user
-    public function getAll()
-    {
-        $sql = "
-            SELECT a.*, u.firstname, u.lastname, u.email, u.photo, u.department, u.cohort
-            FROM attendances a
-            JOIN users u ON u.id = a.user_id
-            ORDER BY a.date DESC
-        ";
+    public function getAttendanceToday($date, $limit = 10, $offset = 0)
+{
+    $sql = "
+    SELECT 
+        u.id,
+        u.firstname,
+        u.lastname,
+        u.email,
+        u.phone,
+        u.photo,
 
-        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        d.name AS department_name,
+        c.name AS cohort_name,
+
+        a.check_in,
+        a.check_out,
+        a.status
+
+    FROM users u
+
+    LEFT JOIN departments d
+        ON u.department_id = d.id
+
+    LEFT JOIN cohorts c
+        ON u.cohort_id = c.id
+
+    LEFT JOIN attendances a
+        ON u.id = a.user_id AND a.date = ?
+
+    WHERE u.role = 'etudiant'
+
+    ORDER BY u.firstname ASC
+    LIMIT ? OFFSET ?
+    ";
+
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute([$date, $limit, $offset]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+  
+
+    public function countPresentToday()
+    {
+        return $this->pdo->query("
+            SELECT COUNT(*) 
+            FROM attendances 
+            WHERE date = CURRENT_DATE 
+            AND status = 'present'
+        ")->fetchColumn();
     }
 
-    // 🔹 Présence d’un utilisateur
-    public function getByUser($user_id)
+    public function countLateToday()
+    {
+        return $this->pdo->query("
+            SELECT COUNT(*) 
+            FROM attendances 
+            WHERE date = CURRENT_DATE 
+            AND status = 'retard'
+        ")->fetchColumn();
+    }
+
+    public function countStudents()
+    {
+        return $this->pdo->query("
+            SELECT COUNT(*) 
+            FROM users 
+            WHERE role = 'etudiant'
+        ")->fetchColumn();
+    }
+
+  
+    public function countAllStudents()
+    {
+        return $this->pdo->query("
+            SELECT COUNT(*) 
+            FROM users 
+            WHERE role = 'etudiant'
+        ")->fetchColumn();
+    }
+
+  
+    public function getStudentHistory($userId)
     {
         $stmt = $this->pdo->prepare("
-            SELECT *
+            SELECT * 
             FROM attendances
             WHERE user_id = ?
             ORDER BY date DESC
         ");
 
-        $stmt->execute([$user_id]);
+        $stmt->execute([$userId]);
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // 🔹 Check-in (arrivée)
-    public function checkIn($user_id, $status = 'present')
+   
+    public function checkToday($userId, $date)
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT * FROM attendances 
+            WHERE user_id = ? AND date = ?
+        ");
+
+        $stmt->execute([$userId, $date]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function createEntry($userId, $date, $time, $status)
     {
         $stmt = $this->pdo->prepare("
             INSERT INTO attendances (user_id, date, check_in, status)
-            VALUES (?, CURRENT_DATE, CURRENT_TIME, ?)
-            ON CONFLICT (user_id, date)
-            DO UPDATE SET
-                check_in = EXCLUDED.check_in,
-                status = EXCLUDED.status
+            VALUES (?, ?, ?, ?)
         ");
 
-        return $stmt->execute([$user_id, $status]);
+        return $stmt->execute([$userId, $date, $time, $status]);
     }
 
-    // 🔹 Check-out (départ)
-    public function checkOut($user_id)
+    public function updateExit($userId, $date, $time)
     {
         $stmt = $this->pdo->prepare("
-            UPDATE attendances
-            SET check_out = CURRENT_TIME
-            WHERE user_id = ?
-            AND date = CURRENT_DATE
+            UPDATE attendances 
+            SET check_out = ?
+            WHERE user_id = ? AND date = ?
         ");
 
-        return $stmt->execute([$user_id]);
-    }
-
-    // 🔹 Statistiques
-    public function stats()
-    {
-        $present = $this->pdo->query("SELECT COUNT(*) FROM attendances WHERE status='present'")->fetchColumn();
-        $retard  = $this->pdo->query("SELECT COUNT(*) FROM attendances WHERE status='retard'")->fetchColumn();
-        $absent  = $this->pdo->query("SELECT COUNT(*) FROM attendances WHERE status='absent'")->fetchColumn();
-
-        return compact('present', 'retard', 'absent');
+        return $stmt->execute([$time, $userId, $date]);
     }
 }

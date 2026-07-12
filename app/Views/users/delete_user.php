@@ -11,5 +11,5 @@ if ($id) {
 
 }
 
-header("Location: utilisateur.php");
+header("Location: index.php?page=users");
 exit;
