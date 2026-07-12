@@ -1,5 +1,7 @@
 <?php
-session_start();
+if(session_status() === PHP_SESSION_NONE){
+    session_start();
+}
 ?>
 
 <!DOCTYPE html>
@@ -13,19 +15,19 @@ session_start();
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
-<body class="bg-slate-100 py-8">
+<body class="bg-slate-100 min-h-screen px-4 py-6 sm:py-8 flex items-center">
 
-    <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden">
+    <div class="w-full max-w-4xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden">
 
         <div class="grid md:grid-cols-2">
 
 <!-- Partie gauche -->
-<div class="hidden md:flex items-center justify-center bg-green-900 min-h-[600px]">
+<div class="hidden md:flex items-center justify-center bg-blue-900 min-h-[600px]">
 
     <img
         src="/COUR-TELLY-TECH/pointagepro/public/images/dashboard.png"
         alt="PointagePro"
-        class="w-full h-full min-h-[600px]"
+        class="w-full h-full min-h-[600px] object-cover"
     >
 
 </div>
@@ -34,7 +36,7 @@ session_start();
             <div class="bg-white p-6">
 
                 <div class="flex justify-center">
-                    <div class="w-16 h-16 rounded-full bg-green-800 flex items-center justify-center text-2xl">
+                    <div class="w-16 h-16 rounded-full bg-blue-800 flex items-center justify-center text-2xl">
                         <i class="bi bi-box-arrow-in-right"></i>
                     </div>
                 </div>
@@ -47,7 +49,7 @@ session_start();
                     Accédez à votre espace sécurisé
                 </p>
 
-                <form class="mt-6" method="POST" action="trait-login.php">
+                <form class="mt-6" method="POST" action="index.php?page=trait-login">
                     <p style="color:red; text-align:center;">
          <?php
             if(isset($_SESSION['error'])){
@@ -60,7 +62,7 @@ session_start();
                     <div class="mb-4">
                         <label class="block text-sm font-medium mb-2">Email</label>
                         <div class="relative">
-                            <i class="bi bi-envelope absolute left-3 top-1/2 -translate-y-1/2 text-green-700"></i>
+                            <i class="bi bi-envelope absolute left-3 top-1/2 -translate-y-1/2 text-blue-700"></i>
                         
                             <input
                                 type="email" name="email"
@@ -76,7 +78,7 @@ session_start();
                         </label>
 
                        <div class="relative">
-                             <i class="bi bi-lock absolute left-3 top-1/2 -translate-y-1/2 text-green-700"></i>
+                             <i class="bi bi-lock absolute left-3 top-1/2 -translate-y-1/2 text-blue-700"></i>
                          
                              <input
                                  type="password" name="password"
@@ -88,7 +90,7 @@ session_start();
 
                     <div class="flex justify-between items-center mt-4 text-sm">
 
-                        <a href="#" class="text-green-900 hover:underline">
+                        <a href="index.php?page=mot-de-passe-oublie" class="text-blue-900 hover:underline">
                             Mot de passe oublié ?
                         </a>
 
@@ -96,7 +98,7 @@ session_start();
 
                     <button
                         type="submit"
-                        class="w-full mt-5 bg-gradient-to-r from-green-900 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white py-2.5 rounded-xl font-semibold transition" >
+                        class="w-full mt-5 bg-gradient-to-r from-blue-900 to-sky-500 hover:from-amber-700 hover:to-sky-400 text-white py-2.5 rounded-xl font-semibold transition" >
                         Se connecter
                     </button>
 

@@ -1,8 +1,79 @@
 <?php
 require_once __DIR__ . '/../../../config/database.php';
 
-$stmt = $pdo->query("SELECT * FROM users ORDER BY created_at DESC");
+$limit = 6;
+$department_id = $_GET['department_id'] ?? '';
+$cohort_id = $_GET['cohort_id'] ?? '';
+$search = $_GET['search'] ?? '';
+
+$departments = $pdo->query("SELECT * FROM departments ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+$cohorts = $pdo->query("SELECT * FROM cohorts ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+
+// numéro de la page de pagination
+$currentPage = isset($_GET['p']) ? (int)$_GET['p'] : 1;
+
+if ($currentPage < 1) {
+    $currentPage = 1;
+}
+
+$offset = ($currentPage - 1) * $limit;
+
+// total utilisateurs
+$totalStmt = $pdo->query("SELECT COUNT(*) FROM users");
+$totalUsers = $totalStmt->fetchColumn();
+
+$totalPages = ceil($totalUsers / $limit);
+$sql = "
+SELECT
+    users.*,
+    departments.name AS department,
+    cohorts.name AS cohort
+FROM users
+LEFT JOIN departments
+    ON users.department_id = departments.id
+LEFT JOIN cohorts
+    ON users.cohort_id = cohorts.id
+WHERE 1=1
+";
+$params = [];
+
+if (!empty($department_id)) {
+    $sql .= " AND users.department_id = :department_id";
+    $params[':department_id'] = $department_id;
+}
+
+if (!empty($cohort_id)) {
+    $sql .= " AND users.cohort_id = :cohort_id";
+    $params[':cohort_id'] = $cohort_id;
+}
+
+if (!empty($search)) {
+    $sql .= " AND (
+        users.firstname LIKE :search OR
+        users.lastname LIKE :search OR
+        users.email LIKE :search OR
+        departments.name LIKE :search OR
+        cohorts.name LIKE :search
+    )";
+    $params[':search'] = "%$search%";
+}
+
+$sql .= " ORDER BY users.created_at DESC
+          LIMIT :limit OFFSET :offset";
+
+$stmt = $pdo->prepare($sql);
+
+foreach ($params as $key => $value) {
+    $stmt->bindValue($key, $value);
+}
+
+$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+$stmt->execute();
+
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -23,41 +94,56 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="flex min-h-screen">
 
     <!-- Sidebar -->
-     <?php require_once '../layouts/sidebar.php'; ?>
+     <?php require_once __DIR__ . '/../layouts/sidebar.php'; ?>
+
 
     
     <!-- Contenu -->
-    <main class="flex-1 ml-64 p-8">
+    <main class="flex-1 ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8">
 
-        <div class="bg-white rounded-2xl shadow-lg p-6">
+        <div class="bg-gradient-to-r from-blue-900 to-amber-700 rounded-3xl p-8 shadow-xl text-white mb-8">
 
-            <!-- En-tête -->
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-start gap-6">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
-                    <i class="fa-solid fa-user-group text-green-700 text-3xl"></i>
-                    Gestion des utilisateurs
+                    <h2 class="text-3xl font-bold flex items-center gap-3">
+                        <i class="fa-solid fa-user-group text-4xl"></i>
+                        Gestion des utilisateurs
                     </h2>
-                    <p class="text-gray-500">Gérez les employés et administrateurs du système.</p>
+                    <p class="mt-3 text-blue-100 max-w-2xl">Gérez les employés et administrateurs du système avec un tableau moderne et cohérent.</p>
                 </div>
-                <div class="flex gap-3">
-                    <!-- Bouton Importer utilisateurs -->
-                    <button
-                        onclick="document.getElementById('importModal').classList.remove('hidden')"
-                        class="bg-green-800 hover:bg-green-700 text-white px-5 py-3 rounded-xl flex items-center gap-2">
-                        <i class="bi bi-upload"></i>
-                        Importer des utilisateurs
-                    </button>
-                    <!-- Bouton Ajouter utilisateur -->
-                    <button
-                        onclick="document.getElementById('modalUser').classList.remove('hidden')"
-                        class="bg-green-800 hover:bg-green-700 text-white px-5 py-3 rounded-xl flex items-center gap-2">
-                        <i class="bi bi-plus-circle"></i>
-                        Ajouter un utilisateur
-                    </button>
+                <div class="bg-white/20 backdrop-blur rounded-3xl p-5 min-w-[220px]">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-white/30 flex items-center justify-center">
+                            <i class="bi bi-people-fill text-3xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-white/80">Administration</p>
+                            <h3 class="text-2xl font-bold">Utilisateurs</h3>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <!-- Modal Ajouter Utilisateur -->
+        </div>
+
+        <div class="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
+            <div class="flex flex-wrap gap-3">
+                <button
+                    onclick="document.getElementById('importModal').classList.remove('hidden')"
+                    class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-3 rounded-2xl flex items-center gap-2 shadow-lg transition">
+                    <i class="bi bi-upload"></i>
+                    Importer des utilisateurs
+                </button>
+                <button
+                    onclick="document.getElementById('modalUser').classList.remove('hidden')"
+                    class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-3 rounded-2xl flex items-center gap-2 shadow-lg transition">
+                    <i class="bi bi-plus-circle"></i>
+                    Ajouter un utilisateur
+                </button>
+            </div>
+            <div class="text-sm text-slate-500">Total utilisateurs : <span class="font-semibold"><?= $totalUsers ?></span></div>
+        </div>
+
+        <!-- Modal Ajouter Utilisateur -->
            
 <div id="modalUser"
      class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -79,7 +165,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <!-- Formulaire -->
-        <form class="mt-6" method="POST" action="store_user.php" enctype="multipart/form-data">
+        <form method="POST" action="index.php?page=store_user" enctype="multipart/form-data">
 
             <div class="grid md:grid-cols-2 gap-4">
 
@@ -98,7 +184,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </label>
                     <input type="text" name="lastname"
                            class="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 outline-none"
-                           placeholder="Fatou Sow">
+                           placeholder="Sow">
                 </div>
 
                 <!-- Email -->
@@ -132,26 +218,37 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </select>
                 </div>
 
-                <!-- Département -->
+               <!-- Département -->
                 <div>
                     <label class="font-medium flex items-center gap-2 mb-2">
                         <i class="bi bi-building"></i> Département
                     </label>
-                    <input type="text" name="department"
-                           class="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 outline-none"
-                           placeholder="Développement Web / Référent Digital">
+                
+                    <select name="department_id"
+                            class="w-full border rounded-xl px-4 py-3">
+                        <?php foreach ($departments as $dep): ?>
+                            <option value="<?= $dep['id'] ?>"
+                                <?= ($department_id == $dep['id']) ? 'selected' : '' ?> >
+                                <?= htmlspecialchars($dep['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-
+                
                 <!-- Cohorte -->
                 <div>
                     <label class="font-medium flex items-center gap-2 mb-2">
                         <i class="bi bi-people-fill"></i> Cohorte
                     </label>
-                    <select class="w-full border rounded-xl px-4 py-3" name="cohort">
-                        <option value="Cohorte 1">Cohorte 1</option>
-                        <option value="Cohorte 2">Cohorte 2</option>
-                        <option value="Cohorte 3">Cohorte 3</option>
-                        <option value="Cohorte 4">Cohorte 4</option>
+                
+                    <select name="cohort_id"
+                            class="w-full border rounded-xl px-4 py-3">
+                        <?php foreach ($cohorts as $coh): ?>
+                            <option value="<?= $coh['id'] ?>"
+                                <?= ($cohort_id == $coh['id']) ? 'selected' : '' ?> >
+                                <?= htmlspecialchars($coh['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
 
@@ -199,132 +296,143 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
             <!-- Recherche -->
-            <div class="flex flex-col md:flex-row gap-4 mb-6">
-                <div class="relative flex-1">
-                    <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input
-                        type="text" placeholder="Rechercher un utilisateur..."
-                        class="w-full border rounded-xl pl-11 pr-4 py-3 focus:ring-2 focus:ring-green-500 outline-none">
-                </div>
-                <select class="border rounded-xl px-4 py-3">
-                    <option>Toutes les formations</option>
-                    <option>Développement Web</option>
-                    <option>Référent Digital</option>
-                    <option>Bureautique</option>
+            <div>
+                <form method="GET" action="index.php" class="flex flex-col lg:flex-row gap-4 mb-6 items-center">
 
-                </select>
-                
-                <select class="border rounded-xl px-4 py-3">
-                    <option>Toutes les cohortes</option>
-                    <option>Cohorte 1</option>
-                    <option>Cohorte 2</option>
-                    <option>Cohorte 3</option>
-                    <option>Cohorte 4</option>
-                </select>
+    <input type="hidden" name="page" value="users">
+
+    <div class="relative flex-1">
+        <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+
+        <input
+            type="text"
+            placeholder="Rechercher un utilisateur..."
+            name="search"
+            value="<?= htmlspecialchars($search) ?>"
+            class="w-full border border-slate-200 rounded-2xl pl-11 pr-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm">
+    </div>
+
+
+    <select name="department_id"
+            class="border border-slate-200 rounded-2xl px-4 py-3 bg-white shadow-sm"
+            onchange="this.form.submit()">
+
+        <option value="">Tous les départements</option>
+
+        <?php foreach ($departments as $dep): ?>
+            <option value="<?= $dep['id'] ?>"
+                <?= ($department_id == $dep['id']) ? 'selected' : '' ?>>
+                <?= htmlspecialchars($dep['name']) ?>
+            </option>
+        <?php endforeach; ?>
+
+    </select>
+
+
+    <select name="cohort_id"
+            class="border border-slate-200 rounded-2xl px-4 py-3 bg-white shadow-sm"
+            onchange="this.form.submit()">
+
+        <option value="">Toutes les cohortes</option>
+
+        <?php foreach ($cohorts as $coh): ?>
+            <option value="<?= $coh['id'] ?>"
+                <?= ($cohort_id == $coh['id']) ? 'selected' : '' ?>>
+                <?= htmlspecialchars($coh['name']) ?>
+            </option>
+        <?php endforeach; ?>
+
+    </select>
+
+</form>
             </div>
 
            <!-- Liste des utilisateurs en Cards -->
             <?php if (!empty($users)): ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <?php foreach ($users as $user): ?>
+                    <?php foreach ($users as $user): ?>
+                        <?php $isActive = in_array($user['is_active'], [1, '1', true, 't', 'true', 'TRUE'], true); ?>
+                        <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-lg hover:-translate-y-1 hover:shadow-2xl transition">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center gap-4">
+                                    <img src="/COUR-TELLY-TECH/pointagepro/public/<?= htmlspecialchars($user['photo']) ?>"
+                                         class="w-16 h-16 rounded-full object-cover flex-shrink-0">
+                                    <div>
+                                        <h3 class="font-bold text-lg">
+                                            <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?>
+                                        </h3>
+                                        <p class="text-sm text-slate-500">ID: <?= htmlspecialchars($user['id']) ?></p>
+                                    </div>
+                                </div>
+                                <span class="<?= $isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?> px-3 py-1 rounded-full text-sm">
+                                    <?= $isActive ? 'Actif' : 'Inactif' ?>
+                                </span>
+                            </div>
 
-<div class="bg-white border rounded-2xl p-5 shadow hover:shadow-lg transition">
+                            <div class="mt-4 space-y-3 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-envelope text-blue-600"></i>
+                                    <span><?= htmlspecialchars($user['email']) ?></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-telephone text-green-600"></i>
+                                    <span><?= htmlspecialchars($user['phone']) ?></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-person-badge text-indigo-600"></i>
+                                    <span><?= htmlspecialchars($user['role']) ?></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-code-slash text-purple-600"></i>
+                                    <span><?= htmlspecialchars($user['department']) ?></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="bi bi-people-fill text-orange-600"></i>
+                                    <span><?= htmlspecialchars($user['cohort']) ?></span>
+                                </div>
+                            </div>
 
-    <!-- Header -->
-    <div class="flex justify-between items-start">
+                            <div class="flex justify-end gap-3 mt-5">
+                                <button
+                                    onclick="
+                                        document.getElementById('editModal').classList.remove('hidden');
+                                        document.getElementById('edit_id').value='<?= $user['id'] ?>';
+                                        document.getElementById('edit_firstname').value='<?= htmlspecialchars($user['firstname']) ?>';
+                                        document.getElementById('edit_lastname').value='<?= htmlspecialchars($user['lastname']) ?>';
+                                        document.getElementById('edit_email').value='<?= htmlspecialchars($user['email']) ?>';
+                                        document.getElementById('edit_phone').value='<?= htmlspecialchars($user['phone']) ?>';
+                                        document.getElementById('edit_department').value = '<?= $user['department_id'] ?>';
+                                        document.getElementById('edit_cohort').value = '<?= $user['cohort_id'] ?>';
+                                        document.getElementById('edit_role').value='<?= htmlspecialchars($user['role']) ?>';
+                                    "
+                                    class="bg-blue-100 text-blue-600 px-3 py-2 rounded-2xl hover:bg-blue-200 transition">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
 
-        <div class="flex items-center gap-4 ">
-           <img src="../../../public/<?= $user['photo'] ?>"
-     class="w-16 h-16 rounded-full object-cover flex-shrink-0"
-     alt="Photo utilisateur">
+                                <a href="index.php?page=toggle_user_status&id=<?= $user['id'] ?>"
+                                   onclick="return confirm('Voulez-vous vraiment <?= $isActive ? 'désactiver' : 'activer' ?> ce compte ?')"
+                                   title="<?= $isActive ? 'Désactiver le compte' : 'Activer le compte' ?>"
+                                   class="<?= $isActive ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-green-100 text-green-600 hover:bg-green-200' ?> px-3 py-2 rounded-2xl transition">
+                                    <i class="bi <?= $isActive ? 'bi-person-x-fill' : 'bi-person-check-fill' ?>"></i>
+                                </a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p class="text-slate-500">Aucun utilisateur trouvé.</p>
+            <?php endif; ?>
 
-            <div>
-                <h3 class="font-bold text-lg">
-                    <?= $user['firstname'] . ' ' . $user['lastname'] ?>
-                </h3>
-                <p class="text-sm text-gray-500">ID: <?= $user['id'] ?></p>
+            <div class="flex flex-wrap justify-center gap-2 mt-8">
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <a href="index.php?page=users&p=<?= $i ?>&department_id=<?= urlencode($department_id) ?>&cohort_id=<?= urlencode($cohort_id) ?>&search=<?= urlencode($search) ?>"
+                       class="px-4 py-2 rounded-2xl border <?= ($i == $currentPage) ? 'bg-blue-900 text-white border-blue-900' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100' ?> transition">
+                        <?= $i ?>
+                    </a>
+                <?php endfor; ?>
             </div>
-        </div>
-
-        <!-- ACTIF / INACTIF -->
-        <span class="<?= $user['is_active'] ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?> px-3 py-1 rounded-full text-sm">
-            <?= $user['is_active'] ? 'Actif' : 'Inactif' ?>
-        </span>
-
+        </main>
     </div>
-
-    <!-- INFOS -->
-    <div class="mt-4 space-y-3 text-sm">
-
-        <div class="flex items-center gap-2">
-            <i class="bi bi-envelope text-blue-600"></i>
-            <span><?= $user['email'] ?></span>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <i class="bi bi-telephone text-green-600"></i>
-            <span><?= $user['phone'] ?></span>
-        </div>
-        <div class="flex items-center gap-2">
-            <i class="bi bi-person-badge text-indigo-600"></i>
-            <span><?= $user['role'] ?></span>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <i class="bi bi-code-slash text-purple-600"></i>
-            <span><?= $user['department'] ?></span>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <i class="bi bi-people-fill text-orange-600"></i>
-            <span><?= $user['cohort'] ?></span>
-        </div>
-
-    </div>
-
-    <!-- ACTIONS -->
-    <div class="flex justify-end gap-3 mt-5">
-
-        <!-- Modifier -->
-        <button
-    onclick="
-        document.getElementById('editModal').classList.remove('hidden');
-
-        document.getElementById('edit_id').value='<?= $user['id'] ?>';
-        document.getElementById('edit_firstname').value='<?= $user['firstname'] ?>';
-        document.getElementById('edit_lastname').value='<?= $user['lastname'] ?>';
-        document.getElementById('edit_email').value='<?= $user['email'] ?>';
-        document.getElementById('edit_phone').value='<?= $user['phone'] ?>';
-        document.getElementById('edit_department').value='<?= $user['department'] ?>';
-        document.getElementById('edit_cohort').value='<?= $user['cohort'] ?>';
-        document.getElementById('edit_role').value='<?= $user['role'] ?>';
-    "
-    class="bg-blue-100 text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-200">
-    <i class="bi bi-pencil-square"></i>
-</button>
-
-        <!-- Supprimer -->
-        <a href="delete_user.php?id=<?= $user['id'] ?>"
-   onclick="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?')"
-   class="bg-red-100 text-red-600 px-3 py-2 rounded-lg hover:bg-red-200">
-    <i class="bi bi-trash-fill"></i>
-</a>
-
-    </div>
-
-</div>
-
-<?php endforeach; ?>
-</div>
-       <?php else: ?>
-    <p>Aucun utilisateur trouvé</p>
-<?php endif; ?>
-
-
-
-    </main>
-
-</div>
 
 <div id="editModal"
      class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -343,7 +451,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </button>
         </div>
 
-        <form action="update_user.php" method="POST" class="mt-6">
+      <form action="index.php?page=update_user" method="POST">
 
             <input type="hidden" name="id" id="edit_id">
 
@@ -387,20 +495,24 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <div>
                     <label>Département</label>
-                    <input
-                        type="text"
-                        id="edit_department"
-                        name="department"
-                        class="w-full border rounded-xl p-3">
+                    <select id="edit_department" name="department_id" class="w-full border rounded-xl p-3">
+                        <?php foreach ($departments as $dep): ?>
+                            <option value="<?= $dep['id'] ?>">
+                                <?= htmlspecialchars($dep['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
 
                 <div>
                     <label>Cohorte</label>
-                    <input
-                        type="text"
-                        id="edit_cohort"
-                        name="cohort"
-                        class="w-full border rounded-xl p-3">
+                    <select id="edit_cohort" name="cohort_id" class="w-full border rounded-xl p-3">
+                        <?php foreach ($cohorts as $coh): ?>
+                            <option value="<?= $coh['id'] ?>">
+                                <?= htmlspecialchars($coh['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
 
                 <div>
@@ -460,7 +572,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </button>
         </div>
 
-        <form action="import_users.php"
+        <form action="index.php?page=import_users"
               method="POST"
               enctype="multipart/form-data"
               class="mt-6">

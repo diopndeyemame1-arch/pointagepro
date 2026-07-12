@@ -22,13 +22,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!$user) {
 
         $_SESSION['error'] = "Email ou mot de passe incorrect.";
-        header("Location: login.php");
+        header("Location: index.php?page=login");
         exit();
 
     }
     if (!$user['is_active']) {
     $_SESSION['error'] = "Votre compte n'est pas encore activé. Vérifiez votre email.";
-    header("Location: login.php");
+    header("Location: index.php?page=login");
     exit;
 }
 
@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!password_verify($password, $user['password_hash'])) {
 
         $_SESSION['error'] = "Email ou mot de passe incorrect.";
-        header("Location: login.php");
+        header("Location: index.php?page=login");
         exit();
 
     }
@@ -47,31 +47,43 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION['error'] =
         "Votre compte n'est pas encore activé. Consultez votre e-mail.";
 
-        header("Location: login.php");
+        header("Location: index.php?page=login");
         exit();
 
     }
 
     // Connexion
     $_SESSION['user_id'] = $user['id'];
+    $_SESSION['user_email'] = $user['email'];
     $_SESSION['role']    = $user['role'];
     $_SESSION['name']    = $user['firstname'];
+    
+    
+    $_SESSION['admin'] = [
+    'id'    => $user['id'],
+    'name'  => $user['firstname'] . ' ' . $user['lastname'],
+    'email' => $user['email'],
+    'phone' => $user['phone'],
+    'photo' => $user['photo']
+];
 
     // Redirection suivant le rôle
-    switch ($user['role']) {
+   switch ($user['role']) {
 
-        case 'admin':
-            header("Location: ../dashboard/admin.php");
-            break;
+    case 'admin':
+        header("Location: /COUR-TELLY-TECH/pointagepro/public/index.php?page=admin");
+        break;
 
-        case 'manager':
-            header("Location: ../dashboard/manager.php");
-            break;
+    case 'etudiant':
+        header("Location: /COUR-TELLY-TECH/pointagepro/public/index.php?page=etudiant");
+        break;
 
-        default:
-            header("Location: ../dashboard/etudiant.php");
-            break;
-    }
+    default:
+        header("Location: /COUR-TELLY-TECH/pointagepro/public/index.php?page=login");
+        break;
+}
+exit();
 
-    exit();
+
+
 }

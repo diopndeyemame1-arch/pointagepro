@@ -7,8 +7,8 @@ $firstname  = $_POST['firstname'];
 $lastname   = $_POST['lastname'];
 $email      = $_POST['email'];
 $phone      = $_POST['phone'];
-$department = $_POST['department'];
-$cohort     = $_POST['cohort'];
+$department_id = $_POST['department_id'];
+$cohort_id = $_POST['cohort_id'];
 $role       = $_POST['role'];
 
 $sql = "UPDATE users
@@ -16,8 +16,8 @@ $sql = "UPDATE users
             lastname=?,
             email=?,
             phone=?,
-            department=?,
-            cohort=?,
+            department_id = ?,
+            cohort_id = ?,
             role=?
         WHERE id=?";
 
@@ -28,11 +28,11 @@ $stmt->execute([
     $lastname,
     $email,
     $phone,
-    $department,
-    $cohort,
+    $department_id,
+    $cohort_id,
     $role,
     $id
 ]);
 
-header("Location: utilisateur.php");
+header("Location: index.php?page=users");
 exit;
