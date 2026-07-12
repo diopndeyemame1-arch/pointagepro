@@ -11,49 +11,54 @@ class AttendanceController
         $this->model = new Attendance($pdo);
     }
 
-    // 🔹 Liste
-    public function index()
-    {
-        $attendances = $this->model->getAll();
-        $stats = $this->model->stats();
+    public function adminData($page = 1, $limit = 9)
+{
+    $page = max(1, (int)$page);
 
-        require_once __DIR__ . '/../Views/attendance/index.php';
+    $offset = ($page - 1) * $limit;
+
+    $date = date('Y-m-d');
+
+    $users = $this->model->getAttendanceToday($date, $limit, $offset);
+
+    return [
+        'users' => $users,
+        'total_students' => $this->model->countStudents(),
+        'present' => $this->model->countPresentToday(),
+        'late' => $this->model->countLateToday(),
+    ];
+}
+
+ 
+    public function studentData($userId)
+    {
+        return [
+            'history' => $this->model->getStudentHistory($userId),
+        ];
     }
 
-    // 🔹 Check-in
-    public function checkIn()
+    public function pointerEntree($userId)
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $date = date('Y-m-d');
+        $time = date('H:i:s');
 
-            $user_id = $_POST['user_id'];
-            $status  = $_POST['status'] ?? 'present';
+        $existing = $this->model->checkToday($userId, $date);
 
-            $this->model->checkIn($user_id, $status);
-
-            header("Location: attendance.php?success=checkin");
-            exit;
+        if ($existing) {
+            return "déjà_pointé";
         }
+
+        $status = ($time > "08:10:00") ? "retard" : "present";
+
+        return $this->model->createEntry($userId, $date, $time, $status);
     }
 
-    // 🔹 Check-out
-    public function checkOut()
+   
+    public function pointerSortie($userId)
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $date = date('Y-m-d');
+        $time = date('H:i:s');
 
-            $user_id = $_POST['user_id'];
-
-            $this->model->checkOut($user_id);
-
-            header("Location: attendance.php?success=checkout");
-            exit;
-        }
-    }
-
-    // 🔹 Voir un utilisateur
-    public function show($user_id)
-    {
-        $attendances = $this->model->getByUser($user_id);
-
-        require_once __DIR__ . '/../Views/attendance/show.php';
+        return $this->model->updateExit($userId, $date, $time);
     }
 }

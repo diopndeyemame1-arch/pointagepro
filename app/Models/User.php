@@ -23,4 +23,12 @@ class User {
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute($data);
     }
+
+    public function getById($id) {
+        $sql = "SELECT * FROM users WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 }

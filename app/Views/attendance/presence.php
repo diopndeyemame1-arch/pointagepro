@@ -1,307 +1,538 @@
 <?php
+
 require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . '/../../Models/Attendance.php';
+require_once __DIR__ . '/../../Controllers/AttendanceController.php';
 
-$stmt = $pdo->query("
-    SELECT *
-    FROM users
-    ORDER BY created_at DESC
-");
+$controller = new AttendanceController($pdo);
 
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$currentPage = isset($_GET['p']) ? (int)$_GET['p'] : 1;
+
+if ($currentPage < 1) {
+    $currentPage = 1;
+}
+$limit = 6;
+
+$data = $controller->adminData($currentPage, $limit);
+
+$users = $data['users'];
+$totalStudents = $data['total_students'];
+$present = $data['present'];
+$late = $data['late'];
+
+$totalPages = ceil($totalStudents / $limit);
+
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Présences Admin</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
+
 <body class="bg-slate-100">
-     <?php require_once '../layouts/sidebar.php'; ?>
 
-    <main class="flex-1 ml-64 p-8">
 
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
+<?php require_once __DIR__ . '/../layouts/sidebar.php'; ?>
 
-        <div>
-            <h2 class="text-3xl font-bold">
-                Présences / Attendance
-            </h2>
 
-            <p class="text-gray-500">
-                Consultez et suivez les présences des etudiants en temps réel.
-            </p>
-        </div>
+<main class="ml-0 lg:ml-64 p-6 lg:p-10">
 
-        <div class="flex gap-3">
 
-            <button class="bg-white border px-4 py-3 rounded-xl">
-                <i class="bi bi-calendar3"></i>
-                27 Avril 2026
-            </button>
 
-            <button class="bg-white border px-4 py-3 rounded-xl">
-                <i class="bi bi-funnel"></i>
-                Filtres
-            </button>
+<!-- ================= HEADER ================= -->
 
-        </div>
- 
-    </div>
+<div class="bg-gradient-to-r from-[#1E4F86] to-[#8B5E3C] rounded-3xl p-8 shadow-xl text-white mb-8">
 
-    <!-- Cartes KPI -->
-    <div class="grid lg:grid-cols-4 gap-5 mb-6">
 
-        <!-- Présents -->
-        <div class="bg-white p-5 rounded-2xl shadow border-l-8 border-green-500">
+<h1 class="text-4xl font-bold flex items-center gap-3">
 
-            <div class="flex items-center gap-4">
+<i class="bi bi-calendar-check-fill text-5xl"></i>
 
-                <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-                    <i class="bi bi-people-fill text-green-600 text-2xl"></i>
-                </div>
+Présences Étudiants
 
-                <div>
-                    <p class="text-gray-500 text-sm uppercase">
-                        Présents
-                    </p>
+</h1>
 
-                    <h3 class="text-3xl font-bold">
-                        123
-                    </h3>
-                </div>
 
-            </div>
+<p class="mt-3 text-blue-100">
 
-        </div>
+Suivi des présences et des pointages en temps réel.
 
-        <!-- Retards -->
-        <div class="bg-white p-5 rounded-2xl shadow border-l-8 border-orange-500">
+</p>
 
-            <div class="flex items-center gap-4">
-
-                <div class="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center">
-                    <i class="bi bi-clock-history text-orange-600 text-2xl"></i>
-                </div>
-
-                <div>
-                    <p class="text-gray-500 text-sm uppercase">
-                        En retard
-                    </p>
-
-                    <h3 class="text-3xl font-bold">
-                        15
-                    </h3>
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Absents -->
-        <div class="bg-white p-5 rounded-2xl shadow border-l-8 border-red-500">
-
-            <div class="flex items-center gap-4">
-
-                <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
-                    <i class="bi bi-person-x-fill text-red-600 text-2xl"></i>
-                </div>
-
-                <div>
-                    <p class="text-gray-500 text-sm uppercase">
-                        Absents
-                    </p>
-
-                    <h3 class="text-3xl font-bold">
-                        8
-                    </h3>
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Total -->
-        <div class="bg-white p-5 rounded-2xl shadow border-l-8 border-purple-500">
-
-            <div class="flex items-center gap-4">
-
-                <div class="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
-                    <i class="bi bi-person-badge-fill text-purple-600 text-2xl"></i>
-                </div>
-
-                <div>
-                    <p class="text-gray-500 text-sm uppercase">
-                        Total etudiants
-                    </p>
-
-                    <h3 class="text-3xl font-bold">
-                        160
-                    </h3>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Tableau -->
-    <div class="bg-white rounded-2xl shadow p-6">
-
-        <h3 class="text-xl font-bold mb-5"><i class="bi bi-calendar-check"></i>
-            Liste des présences
-        </h3>
-
-        <!-- Recherche -->
-        <div class="flex flex-col md:flex-row gap-4 mb-6">
-
-            <div class="relative flex-1">
-
-                <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-
-                <input
-                    type="text"
-                    placeholder="Rechercher un employé..."
-                    class="w-full border rounded-xl pl-10 pr-4 py-3">
-
-            </div>
-
-            <select class="border rounded-xl px-4 py-3">
-                <option>Tous les départements</option>
-                <option value="">Developpement Web</option>
-                <option value="">Marketing Digital</option>
-                <option value="">Bureautique</option>
-            </select>
-
-            <select class="border rounded-xl px-4 py-3">
-                <option>Tous les statuts</option>
-                <option value="present">Presences</option>
-                <option value="absent">Absences</option>
-                <option value="retard">En retard</option>
-            </select>
-            <select class="border rounded-xl px-4 py-3">
-                <option>Toutes les cohortes</option>
-                <option>Cohorte 1</option>
-                <option>Cohorte 2</option>
-                <option>Cohorte 3</option>
-                <option>Cohorte 4</option>
-            </select>
-
-        </div>
-
-       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-    <!-- Card Présence -->
-     <?php
-     $date = date('Y-m-d');
-
-$stmt = $pdo->prepare("
-    SELECT check_in, check_out, status
-    FROM attendances
-    WHERE user_id = ? AND date = ?
-");
-
-$attStmt = $pdo->prepare("
-    SELECT check_in, check_out, status
-    FROM attendances
-    WHERE user_id = ? AND date = ?
-");
-     ?>
-    <?php foreach ($users as $user): ?>
-
-<div class="bg-white border rounded-2xl p-5 shadow hover:shadow-lg transition">
-
-    <div class="flex justify-between items-center mb-4">
-
-        <div class="flex items-center gap-3">
-
-            <img src="../../../public/<?= $user['photo'] ?>"
-                 class="w-14 h-14 rounded-full object-cover">
-
-            <div>
-                <h3 class="font-bold text-lg">
-                    <?= $user['firstname'] . ' ' . $user['lastname'] ?>
-                </h3>
-
-                <p class="text-sm text-gray-500">
-                    <?= $user['department'] ?>
-                </p>
-            </div>
-
-        </div>
-
-        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
-            Présent
-        </span>
-
-    </div>
-
-    <div class="space-y-3 text-sm">
-
-        <div class="flex justify-between">
-            <span class="text-gray-500">
-                <i class="bi bi-people-fill text-orange-600"></i>  Cohorte
-            </span>
-            <span class="font-semibold">
-                <?= $user['cohort'] ?>
-            </span>
-        </div>
-
-        <div class="flex justify-between">
-            <span class="text-gray-500">
-                <i class="bi bi-envelope text-blue-600"></i>  Email
-            </span>
-            <span class="font-semibold">
-                <?= $user['email'] ?>
-            </span>
-        </div>
-
-        <div class="flex justify-between">
-            <span class="text-gray-500">
-                <i class="bi bi-telephone text-green-600"></i>  Téléphone
-            </span>
-            <span class="font-semibold">
-                <?= $user['phone'] ?>
-            </span>
-        </div>
-        <div class="flex justify-between"> 
-            <span class="text-gray-500"> <i class="bi bi-clock text-green-600"></i> Arrivée </span> 
-            <span class="font-semibold"><?= $attendance['check_in'] ?? '--:--' ?></span>
-        </div> 
-        <div class="flex justify-between"> 
-            <span class="text-gray-500"> <i class="bi bi-box-arrow-right text-red-600"></i> Départ </span> 
-            <span class="font-semibold"><?= $attendance['check_out'] ?? '--:--' ?></span>
-        </div>
-        
-
-    </div>
-
-    <div class="mt-5 flex justify-end gap-2">
-
-        <button class="bg-blue-100 text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-200">
-            <i class="bi bi-eye"></i>
-        </button>
-
-        <button class="bg-green-100 text-green-600 px-3 py-2 rounded-lg hover:bg-green-200">
-            <i class="bi bi-pencil-square"></i>
-        </button>
-
-    </div>
 
 </div>
+
+
+
+
+
+
+<!-- ================= KPI ================= -->
+
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+
+
+<!-- PRESENT -->
+
+<div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-green-600 hover:-translate-y-2 hover:shadow-2xl transition duration-300">
+
+
+<div class="flex justify-between items-center">
+
+
+<div>
+
+<p class="text-gray-500 uppercase text-sm font-semibold">
+
+Présents
+
+</p>
+
+
+<h2 class="text-4xl font-bold text-green-600 mt-2">
+
+<?= $present ?>
+
+</h2>
+
+
+</div>
+
+
+<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+
+<i class="bi bi-check-circle-fill text-green-600 text-3xl"></i>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- RETARD -->
+
+
+<div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-[#8B5E3C] hover:-translate-y-2 hover:shadow-2xl transition duration-300">
+
+
+<div class="flex justify-between items-center">
+
+
+<div>
+
+<p class="text-gray-500 uppercase text-sm font-semibold">
+
+Retards
+
+</p>
+
+
+<h2 class="text-4xl font-bold text-[#8B5E3C] mt-2">
+
+<?= $late ?>
+
+</h2>
+
+
+</div>
+
+
+<div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
+
+<i class="bi bi-clock-history text-[#8B5E3C] text-3xl"></i>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- TOTAL -->
+
+
+<div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-[#1E4F86] hover:-translate-y-2 hover:shadow-2xl transition duration-300">
+
+
+<div class="flex justify-between items-center">
+
+
+<div>
+
+<p class="text-gray-500 uppercase text-sm font-semibold">
+
+Étudiants
+
+</p>
+
+
+<h2 class="text-4xl font-bold text-[#1E4F86] mt-2">
+
+<?= $totalStudents ?>
+
+</h2>
+
+
+</div>
+
+
+<div class="w-16 h-16 bg-blue-100 rounded-full flex justify-center items-center">
+
+<i class="bi bi-people-fill text-[#1E4F86] text-3xl"></i>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- ================= LISTE ================= -->
+
+
+
+<div class="bg-white rounded-3xl shadow-xl p-6">
+
+
+
+<div class="flex justify-between items-center mb-6">
+
+
+<div>
+
+
+<h2 class="text-2xl font-bold text-[#1E4F86] flex items-center gap-2">
+
+
+<i class="bi bi-list-check"></i>
+
+Liste des présences
+
+
+</h2>
+
+
+<p class="text-gray-500 text-sm">
+
+État actuel des étudiants
+
+</p>
+
+
+</div>
+
+
+<i class="bi bi-person-lines-fill text-3xl text-gray-400"></i>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+
+
+<?php foreach($users as $user): ?>
+
+
+<?php $status=$user['status'] ?? 'absent'; ?>
+
+
+
+<div class="bg-white  rounded-2xl p-5 shadow-xl hover:shadow-xl hover:-translate-y-1 transition duration-300">
+
+
+
+<!-- USER -->
+
+
+<div class="flex justify-between items-start mb-5">
+
+
+
+<div class="flex gap-3 items-center">
+
+
+<img src="/COUR-TELLY-TECH/pointagepro/public/<?= $user['photo'] ?>"
+class="w-16 h-16 rounded-full object-cover border-2 border-blue-100">
+
+
+<div>
+
+<h3 class="font-bold text-slate-800">
+
+<?= $user['firstname'].' '.$user['lastname'] ?>
+
+</h3>
+
+
+<p class="text-sm text-gray-500">
+
+<?= htmlspecialchars($user['department_name']) ?>
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<!-- STATUS -->
+
+
+<?php if($status=="present"): ?>
+
+
+<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+
+Présent
+
+</span>
+
+
+<?php elseif($status=="retard"): ?>
+
+
+<span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-semibold">
+
+Retard
+
+</span>
+
+
+<?php else: ?>
+
+
+<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
+
+Absent
+
+</span>
+
+
+<?php endif; ?>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- DETAILS -->
+
+
+<div class="space-y-3 text-sm">
+
+
+
+<div class="flex justify-between">
+
+<span class="text-gray-500">
+
+<i class="bi bi-people text-[#8B5E3C]"></i>
+
+Cohorte
+
+</span>
+
+
+<strong>
+
+<?= htmlspecialchars($user['cohort_name']) ?>
+
+</strong>
+
+
+</div>
+
+
+
+
+
+<div class="flex justify-between">
+
+<span class="text-gray-500">
+
+<i class="bi bi-envelope text-blue-600"></i>
+
+Email
+
+</span>
+
+
+<strong class="text-xs">
+
+<?= $user['email'] ?>
+
+</strong>
+
+
+</div>
+
+
+
+
+
+<div class="flex justify-between">
+
+<span class="text-gray-500">
+
+<i class="bi bi-box-arrow-in-right text-green-600"></i>
+
+Entrée
+
+</span>
+
+
+<strong>
+
+<?= $user['check_in'] ?? '--:--' ?>
+
+</strong>
+
+
+</div>
+
+
+
+
+
+
+<div class="flex justify-between">
+
+<span class="text-gray-500">
+
+<i class="bi bi-box-arrow-right text-red-600"></i>
+
+Sortie
+
+</span>
+
+
+<strong>
+
+<?= $user['check_out'] ?? '--:--' ?>
+
+</strong>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
 
 <?php endforeach; ?>
 
+
 </div>
 
-    </div>
+
+
+
+
+
+
+
+
+<!-- PAGINATION -->
+
+
+<div class="flex justify-center mt-8 gap-2">
+
+
+<?php for($i=1;$i<=$totalPages;$i++): ?>
+
+
+<a href="index.php?page=presence_admin&p=<?=$i?>"
+
+class="px-4 py-2 rounded-xl font-semibold transition
+
+<?=($i==$currentPage)
+
+?'bg-[#1E4F86] text-white'
+
+:'bg-slate-100 hover:bg-[#8B5E3C] hover:text-white'
+
+?>">
+
+
+<?=$i?>
+
+
+</a>
+
+
+
+<?php endfor; ?>
+
+
+</div>
+
+
+
+</div>
+
+
+
 
 </main>
+
+
 </body>
 </html>
-
