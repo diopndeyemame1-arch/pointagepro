@@ -2,11 +2,11 @@
 
 date_default_timezone_set('Africa/Dakar');
 
-$host = "localhost";
-$port = "5432";
-$dbname = "projet_pointage";
-$user = "postgres";
-$password = "1234";
+$host     = getenv('DB_HOST')     ?: 'localhost';
+$port     = getenv('DB_PORT')     ?: '5432';
+$dbname   = getenv('DB_NAME')     ?: 'projet_pointage';
+$user     = getenv('DB_USER')     ?: 'postgres';
+$password = getenv('DB_PASSWORD') ?: '1234';
 
 try {
     $pdo = new PDO(
