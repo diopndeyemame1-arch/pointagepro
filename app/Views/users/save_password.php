@@ -79,7 +79,7 @@ $stmt->execute([
 
 <p class="text-gray-600 mb-6">Votre compte a été activé avec succès.Vous pouvez maintenant vous connecter.</p>
 
-<a href="../../public/index.php?page=login"
+<a href="index.php?page=login"
    class="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-xl inline-block">
 Se connecter
 </a>
