@@ -3,7 +3,7 @@
 class QrCodeModel
 {
     private $pdo;
-    private $publicBase = '/COUR-TELLY-TECH/pointagepro/public';
+    private $publicBase = '';
 
     public function __construct($pdo)
     {

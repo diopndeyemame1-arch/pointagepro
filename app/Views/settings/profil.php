@@ -45,10 +45,10 @@ $user = $model->getUserById($_SESSION['user_id']);
             <div class="flex flex-col items-center">
 
 <?php
-$photoPath = "/COUR-TELLY-TECH/pointagepro/public/uploads/" . ($user['photo'] ?? '');
+$photoPath = "/uploads/" . ($user['photo'] ?? '');
 
 if (empty($user['photo']) || !file_exists($_SERVER['DOCUMENT_ROOT'] . $photoPath)) {
-    $photoPath = "/COUR-TELLY-TECH/pointagepro/public/images/swe.jpeg";
+    $photoPath = "/images/swe.jpeg";
 }
 ?>
 <img src="<?= $photoPath ?>"

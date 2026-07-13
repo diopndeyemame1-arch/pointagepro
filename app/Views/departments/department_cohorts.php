@@ -161,7 +161,7 @@ unset($cohort);
                     <i class="bi bi-pencil"></i>
                 </button>
 
-               <a href="/COUR-TELLY-TECH/pointagepro/public/index.php?page=delete_cohort&id=<?= $c['id'] ?>"
+               <a href="/index.php?page=delete_cohort&id=<?= $c['id'] ?>"
    onclick="return confirm('Voulez-vous vraiment supprimer cette cohorte ?')"
    class="bg-red-100 text-red-700 px-3 py-2 rounded-2xl hover:bg-red-200 transition shadow-sm">
     <i class="bi bi-trash"></i>
@@ -191,7 +191,7 @@ class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justi
 
 <h2 class="text-2xl font-bold mb-6 text-slate-900">Modifier la cohorte</h2>
 
-<form action="/COUR-TELLY-TECH/pointagepro/public/index.php?page=update_cohort" method="POST">
+<form action="/index.php?page=update_cohort" method="POST">
 
 <input type="hidden" name="id" id="edit_id">
 

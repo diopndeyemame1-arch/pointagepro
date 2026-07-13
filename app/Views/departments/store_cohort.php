@@ -44,7 +44,7 @@ require_once '../../../config/database.php';
 
     $pdo->commit();
 
-    header("Location: /COUR-TELLY-TECH/pointagepro/public/index.php?page=departments");
+    header("Location: /index.php?page=departments");
 exit;
     exit;
 

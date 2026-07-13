@@ -13,7 +13,7 @@ $stmt->execute([
     ':name' => $name,
     ':description' => $description
 ]);
-    header("Location: /COUR-TELLY-TECH/pointagepro/public/index.php?page=departments");
+    header("Location: /index.php?page=departments");
 
 // header("Location: department.php");
 exit;

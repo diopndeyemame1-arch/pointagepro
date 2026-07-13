@@ -481,7 +481,7 @@ Générer
 
 <img
 
-src="/COUR-TELLY-TECH/pointagepro/public/uploads/qrcodes/qr_actif.png?<?=time()?>"
+src="/uploads/qrcodes/qr_actif.png?<?=time()?>"
 
 class="mx-auto border-4 border-[#1E4F86]
 rounded-2xl p-4 shadow-lg"
@@ -539,7 +539,7 @@ Les étudiants utilisent ce QR pour enregistrer leur présence.
 
 <a
 
-href="/COUR-TELLY-TECH/pointagepro/public/uploads/qrcodes/qr_actif.png"
+href="/uploads/qrcodes/qr_actif.png"
 
 download="QR_PointagePro.png"
 
@@ -950,7 +950,7 @@ try{
 let response = await fetch(
 
 
-"/COUR-TELLY-TECH/pointagepro/public/index.php?page=scan_qr",
+"/index.php?page=scan_qr",
 
 
 {

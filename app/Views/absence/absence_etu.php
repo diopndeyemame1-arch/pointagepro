@@ -237,7 +237,7 @@ Consultez et gérez les demandes d'absence des étudiants en temps réel.
             </div>
 
             <!-- Formulaire -->
-            <form action="/COUR-TELLY-TECH/pointagepro/public/index.php?page=absence" method="POST" enctype="multipart/form-data">
+            <form action="/index.php?page=absence" method="POST" enctype="multipart/form-data">
 
             <div class="grid md:grid-cols-2 gap-4">
 

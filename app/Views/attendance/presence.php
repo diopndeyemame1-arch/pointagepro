@@ -294,7 +294,7 @@ Liste des présences
 <div class="flex gap-3 items-center">
 
 
-<img src="/COUR-TELLY-TECH/pointagepro/public/<?= $user['photo'] ?>"
+<img src="/<?= $user['photo'] ?>"
 class="w-16 h-16 rounded-full object-cover border-2 border-blue-100">
 
 

@@ -71,15 +71,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
    switch ($user['role']) {
 
     case 'admin':
-        header("Location: /COUR-TELLY-TECH/pointagepro/public/index.php?page=admin");
+        header("Location: index.php?page=admin");
         break;
 
     case 'etudiant':
-        header("Location: /COUR-TELLY-TECH/pointagepro/public/index.php?page=etudiant");
+        header("Location: index.php?page=etudiant");
         break;
 
     default:
-        header("Location: /COUR-TELLY-TECH/pointagepro/public/index.php?page=login");
+        header("Location: index.php?page=login");
         break;
 }
 exit();

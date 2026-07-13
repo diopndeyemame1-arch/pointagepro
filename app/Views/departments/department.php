@@ -218,7 +218,7 @@ $userCount = $pdo->query("SELECT COUNT(*) FROM users WHERE role='etudiant'")->fe
 
 <h2 class="text-2xl font-bold mb-4 text-slate-900">Créer un département</h2>
 
-<form action="/COUR-TELLY-TECH/pointagepro/public/index.php?page=store_department" method="POST">
+<form action="/index.php?page=store_department" method="POST">
 
 <input type="text" name="name" placeholder="Nom département"
 class="w-full border border-slate-200 p-3 rounded-2xl mb-3 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300" required>
@@ -260,7 +260,7 @@ Fermer
 
     <!-- FORM -->
    <form method="POST"
-      action="/COUR-TELLY-TECH/pointagepro/public/index.php?page=store_cohort">
+      action="/index.php?page=store_cohort">
 
 
       <!-- Département -->

@@ -17,7 +17,7 @@ if(session_status() === PHP_SESSION_NONE){
     <div class="w-full max-w-4xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden">
         <div class="grid md:grid-cols-2">
             <div class="hidden md:flex items-center justify-center bg-blue-900 min-h-[600px]">
-                <img src="/COUR-TELLY-TECH/pointagepro/public/images/dashboard.png" alt="PointagePro" class="w-full h-full min-h-[600px] object-cover">
+                <img src="/images/dashboard.png" alt="PointagePro" class="w-full h-full min-h-[600px] object-cover">
             </div>
             <div class="bg-white p-6">
                 <div class="flex justify-center">

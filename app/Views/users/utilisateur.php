@@ -355,7 +355,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-lg hover:-translate-y-1 hover:shadow-2xl transition">
                             <div class="flex justify-between items-start">
                                 <div class="flex items-center gap-4">
-                                    <img src="/COUR-TELLY-TECH/pointagepro/public/<?= htmlspecialchars($user['photo']) ?>"
+                                    <img src="/<?= htmlspecialchars($user['photo']) ?>"
                                          class="w-16 h-16 rounded-full object-cover flex-shrink-0">
                                     <div>
                                         <h3 class="font-bold text-lg">

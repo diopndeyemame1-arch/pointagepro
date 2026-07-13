@@ -248,7 +248,7 @@ window.addEventListener("load", function(){
                     dernierQr = decodedText;
                     try{
                         let response = await fetch(
-                            "/COUR-TELLY-TECH/pointagepro/public/index.php?page=scan_admin_qr",
+                            "/index.php?page=scan_admin_qr",
                             {
                                 method: "POST",
                                 headers: {
@@ -371,7 +371,7 @@ window.addEventListener("load", function(){
 
                     try {
                         const response = await fetch(
-                            "/COUR-TELLY-TECH/pointagepro/public/index.php?page=scan_admin_qr",
+                            "/index.php?page=scan_admin_qr",
                             {
                                 method: "POST",
                                 headers: {
