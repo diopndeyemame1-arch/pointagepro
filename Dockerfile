@@ -5,9 +5,10 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# 2. On installe les dépendances système Linux PUIS l'extension PostgreSQL
-RUN apt-get update && apt-get install -y libpq-dev unzip git \
-    && docker-php-ext-install pdo pdo_pgsql
+# 2. On installe les dépendances système Linux PUIS les extensions (PostgreSQL, GD)
+RUN apt-get update && apt-get install -y libpq-dev unzip git libpng-dev libjpeg-dev libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql gd
 
 # 3. On installe Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
