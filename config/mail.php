@@ -42,7 +42,8 @@ function sendActivationMail($email, $fullname, $token)
         $mail->isHTML(true);
 $mail->Subject = "Activation de votre compte PointagePro";
 
-$link = "http://localhost/COUR-TELLY-TECH/pointagepro/public/index.php?page=activate&token=" . urlencode($token);
+$baseUrl = rtrim(getenv('APP_URL') ?: ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost'), '/');
+        $link = $baseUrl . '/index.php?page=activate&token=' . urlencode($token);
 
 $mail->Body = '
 <!DOCTYPE html>
@@ -321,7 +322,8 @@ function sendPasswordResetMail($email, $fullname, $token)
         $mail->isHTML(true);
         $mail->Subject = "Réinitialisation de votre mot de passe PointagePro";
 
-        $link = "http://localhost/COUR-TELLY-TECH/pointagepro/public/index.php?page=reset-password&token=" . urlencode($token);
+        $baseUrl = rtrim(getenv('APP_URL') ?: ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost'), '/');
+        $link = $baseUrl . '/index.php?page=reset-password&token=' . urlencode($token);
 
         $mail->Body = '
 <!DOCTYPE html>
