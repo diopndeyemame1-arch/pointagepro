@@ -289,7 +289,7 @@ $link";
         return true;
 
     } catch (Exception $e) {
-        // In production, don't echo. Return false so caller can log/handle it.
+        error_log("Mail Error (Activation): " . $e->getMessage() . " | Info: " . ($mail->ErrorInfo ?? ''));
         return false;
     }
 }
@@ -378,6 +378,7 @@ function sendPasswordResetMail($email, $fullname, $token)
 
         return true;
     } catch (Exception $e) {
+        error_log("Mail Error (Reset): " . $e->getMessage() . " | Info: " . ($mail->ErrorInfo ?? ''));
         return false;
     }
 }
@@ -428,6 +429,7 @@ function sendAbsenceNotificationMail($email, $fullname, $subject, $title, $messa
 
         return true;
     } catch (Exception $e) {
+        error_log("Mail Error (Absence): " . $e->getMessage() . " | Info: " . ($mail->ErrorInfo ?? ''));
         return false;
     }
 }
