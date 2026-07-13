@@ -18,9 +18,9 @@ class UserController {
     $firstname = $_POST['firstname'];
     $lastname = $_POST['lastname'];
     $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $department_id = $_POST['department_id'];
-    $cohort_id = $_POST['cohort_id'];
+    $phone = $_POST['phone'] ?? null;
+    $department_id = !empty($_POST['department_id']) ? $_POST['department_id'] : null;
+    $cohort_id = !empty($_POST['cohort_id']) ? $_POST['cohort_id'] : null;
     $role = $_POST['role'];
 
     // ✅ CHECK EMAIL
@@ -122,8 +122,8 @@ public function update($data = null)
     $lastname = $data['lastname'];
     $email = $data['email'];
     $phone = $data['phone'];
-    $department_id = $data['department_id'];
-    $cohort_id = $data['cohort_id'];
+    $department_id = !empty($data['department_id']) ? $data['department_id'] : null;
+    $cohort_id = !empty($data['cohort_id']) ? $data['cohort_id'] : null;
     $role = $data['role'];
 
     $sql = "UPDATE users
