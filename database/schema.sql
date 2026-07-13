@@ -131,7 +131,7 @@ VALUES (
     'Admin',
     'PointagePro',
     'admin@pointagepro.com',
-    '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    '$2y$12$7z.mA5WsKBFPXNdec7vF4OsLaXCiWlpwUjmjxdS7Rq9kEuwFiH.Cm', -- 'Admin1234'
     'admin',
     TRUE,
     TRUE
