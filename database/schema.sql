@@ -121,6 +121,17 @@ CREATE TABLE IF NOT EXISTS public_holidays (
     created_at   TIMESTAMP    DEFAULT NOW()
 );
 
+-- 11. Logs d'audit
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id         SERIAL PRIMARY KEY,
+    user_id    INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    action     VARCHAR(100) NOT NULL,
+    entity     VARCHAR(100) NOT NULL,
+    entity_id  VARCHAR(255),
+    ip         VARCHAR(45),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- ============================================================
 --  Compte administrateur par défaut
 --  Email    : admin@pointagepro.com

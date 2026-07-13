@@ -41,7 +41,7 @@ $approvedLeavesToday = (int)$pdo->query("
 ")->fetchColumn();
 
 $pendingLeaves = (int)$pdo->query("SELECT COUNT(*) FROM absences WHERE status = 'en_attente'")->fetchColumn();
-$qrCodes = (int)$pdo->query("SELECT COUNT(*) FROM qr_codes")->fetchColumn();
+$qrCodes = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'etudiant'")->fetchColumn();
 
 $recentRows = $pdo->query("
     SELECT action, entity, created_at
