@@ -48,6 +48,7 @@ $stmt = $pdo->prepare("
     SET
         password_hash = ?,
         is_active = TRUE,
+        is_verified = TRUE,
         activation_token = NULL
     WHERE id = ?
 ");
