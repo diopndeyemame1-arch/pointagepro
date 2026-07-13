@@ -308,7 +308,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             type="text"
             placeholder="Rechercher un utilisateur..."
             name="search"
-            value="<?= htmlspecialchars($search) ?>"
+            value="<?= htmlspecialchars($search ?? '') ?>"
             class="w-full border border-slate-200 rounded-2xl pl-11 pr-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm">
     </div>
 
@@ -351,17 +351,17 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php if (!empty($users)): ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <?php foreach ($users as $user): ?>
-                        <?php $isActive = in_array($user['is_active'], [1, '1', true, 't', 'true', 'TRUE'], true); ?>
+                        <?php $isActive = in_array($user['is_active'] ?? '', [1, '1', true, 't', 'true', 'TRUE'], true); ?>
                         <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-lg hover:-translate-y-1 hover:shadow-2xl transition">
                             <div class="flex justify-between items-start">
                                 <div class="flex items-center gap-4">
-                                    <img src="/<?= htmlspecialchars($user['photo']) ?>"
+                                    <img src="/<?= htmlspecialchars($user['photo'] ?? '') ?>"
                                          class="w-16 h-16 rounded-full object-cover flex-shrink-0">
                                     <div>
                                         <h3 class="font-bold text-lg">
-                                            <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?>
+                                            <?= htmlspecialchars(($user['firstname'] ?? '') . ' ' . ($user['lastname'] ?? '')) ?>
                                         </h3>
-                                        <p class="text-sm text-slate-500">ID: <?= htmlspecialchars($user['id']) ?></p>
+                                        <p class="text-sm text-slate-500">ID: <?= htmlspecialchars($user['id'] ?? '') ?></p>
                                     </div>
                                 </div>
                                 <span class="<?= $isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?> px-3 py-1 rounded-full text-sm">
@@ -372,23 +372,23 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div class="mt-4 space-y-3 text-sm">
                                 <div class="flex items-center gap-2">
                                     <i class="bi bi-envelope text-blue-600"></i>
-                                    <span><?= htmlspecialchars($user['email']) ?></span>
+                                    <span><?= htmlspecialchars($user['email'] ?? '') ?></span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <i class="bi bi-telephone text-green-600"></i>
-                                    <span><?= htmlspecialchars($user['phone']) ?></span>
+                                    <span><?= htmlspecialchars($user['phone'] ?? '') ?></span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <i class="bi bi-person-badge text-indigo-600"></i>
-                                    <span><?= htmlspecialchars($user['role']) ?></span>
+                                    <span><?= htmlspecialchars($user['role'] ?? '') ?></span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <i class="bi bi-code-slash text-purple-600"></i>
-                                    <span><?= htmlspecialchars($user['department']) ?></span>
+                                    <span><?= htmlspecialchars($user['department'] ?? '') ?></span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <i class="bi bi-people-fill text-orange-600"></i>
-                                    <span><?= htmlspecialchars($user['cohort']) ?></span>
+                                    <span><?= htmlspecialchars($user['cohort'] ?? '') ?></span>
                                 </div>
                             </div>
 
@@ -396,20 +396,20 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <button
                                     onclick="
                                         document.getElementById('editModal').classList.remove('hidden');
-                                        document.getElementById('edit_id').value='<?= $user['id'] ?>';
-                                        document.getElementById('edit_firstname').value='<?= htmlspecialchars($user['firstname']) ?>';
-                                        document.getElementById('edit_lastname').value='<?= htmlspecialchars($user['lastname']) ?>';
-                                        document.getElementById('edit_email').value='<?= htmlspecialchars($user['email']) ?>';
-                                        document.getElementById('edit_phone').value='<?= htmlspecialchars($user['phone']) ?>';
-                                        document.getElementById('edit_department').value = '<?= $user['department_id'] ?>';
-                                        document.getElementById('edit_cohort').value = '<?= $user['cohort_id'] ?>';
-                                        document.getElementById('edit_role').value='<?= htmlspecialchars($user['role']) ?>';
+                                        document.getElementById('edit_id').value='<?= $user['id'] ?? '' ?>';
+                                        document.getElementById('edit_firstname').value='<?= htmlspecialchars($user['firstname'] ?? '') ?>';
+                                        document.getElementById('edit_lastname').value='<?= htmlspecialchars($user['lastname'] ?? '') ?>';
+                                        document.getElementById('edit_email').value='<?= htmlspecialchars($user['email'] ?? '') ?>';
+                                        document.getElementById('edit_phone').value='<?= htmlspecialchars($user['phone'] ?? '') ?>';
+                                        document.getElementById('edit_department').value = '<?= $user['department_id'] ?? '' ?>';
+                                        document.getElementById('edit_cohort').value = '<?= $user['cohort_id'] ?? '' ?>';
+                                        document.getElementById('edit_role').value='<?= htmlspecialchars($user['role'] ?? '') ?>';
                                     "
                                     class="bg-blue-100 text-blue-600 px-3 py-2 rounded-2xl hover:bg-blue-200 transition">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
-                                <a href="index.php?page=toggle_user_status&id=<?= $user['id'] ?>"
+                                <a href="index.php?page=toggle_user_status&id=<?= $user['id'] ?? '' ?>"
                                    onclick="return confirm('Voulez-vous vraiment <?= $isActive ? 'désactiver' : 'activer' ?> ce compte ?')"
                                    title="<?= $isActive ? 'Désactiver le compte' : 'Activer le compte' ?>"
                                    class="<?= $isActive ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-green-100 text-green-600 hover:bg-green-200' ?> px-3 py-2 rounded-2xl transition">
