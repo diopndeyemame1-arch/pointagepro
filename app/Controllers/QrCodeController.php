@@ -37,7 +37,7 @@ class QrCodeController
         header('Content-Type: application/json; charset=UTF-8');
 
         if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+            if (session_status() === PHP_SESSION_NONE) { session_start(); }
         }
 
         if (($_SESSION['role'] ?? '') !== 'admin') {

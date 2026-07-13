@@ -3,7 +3,7 @@
 function addAudit($pdo, $action, $entity, $entityId = null)
 {
     if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
     }
 
     try {

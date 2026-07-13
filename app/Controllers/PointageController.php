@@ -28,7 +28,7 @@ class PointageController
 
     public function entree()
     {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
         $user_id = $_SESSION['user_id'] ?? null;
         if (!$user_id) {
@@ -88,7 +88,7 @@ class PointageController
 
     public function sortie()
     {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
         $user_id = $_SESSION['user_id'] ?? null;
         if (!$user_id) {
