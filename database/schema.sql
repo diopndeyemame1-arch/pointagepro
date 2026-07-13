@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS users (
     firstname       VARCHAR(100) NOT NULL,
     lastname        VARCHAR(100) NOT NULL,
     email           VARCHAR(200) NOT NULL UNIQUE,
-    password_hash   TEXT         NOT NULL,
+    password_hash   TEXT,
     role            VARCHAR(50)  NOT NULL DEFAULT 'etudiant',
     department      VARCHAR(150),
     department_id   INTEGER REFERENCES departments(id) ON DELETE SET NULL,
