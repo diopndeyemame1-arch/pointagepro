@@ -73,6 +73,13 @@ unset($cohort);
         </div>
 
     </div>
+
+    <!-- Bouton Retour -->
+    <a href="index.php?page=departments"
+       class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl transition shadow-sm">
+        <i class="bi bi-arrow-left"></i>
+        Retour aux départements
+    </a>
 </div>
 
 <!-- GRID -->

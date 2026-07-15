@@ -61,7 +61,7 @@ $userCount = $pdo->query("SELECT COUNT(*) FROM users WHERE role='etudiant'")->fe
 
 <!-- MAIN -->
 <main class="flex-1 ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8">
-<div class="bg-white/95 ring-1 ring-slate-200 rounded-2xl shadow-xl p-6">
+<div class="bg-gray/90 ring-1 ring-slate-200 rounded-2xl shadow-2xl p-6">
 
 <!-- HEADER -->
 <div class="flex justify-between items-center mb-6">
@@ -91,7 +91,9 @@ $userCount = $pdo->query("SELECT COUNT(*) FROM users WHERE role='etudiant'")->fe
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
     <!-- Départements -->
-    <div class="group bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-500 cursor-pointer">
+     
+<div class="bg-white rounded-3xl shadow-lg p-6 border-l-8 hover:-translate-y-2 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 cursor-pointer">
+    <!-- <div class="group bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-500 cursor-pointer"> -->
         <div class="flex justify-between items-center">
             <div>
                 <p class="text-indigo-700 text-sm uppercase tracking-[0.2em] font-semibold">
@@ -107,7 +109,7 @@ $userCount = $pdo->query("SELECT COUNT(*) FROM users WHERE role='etudiant'")->fe
         </div>
     </div>
     <!-- Cohortes -->
-    <div class="group bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-500 cursor-pointer">
+    <div class="bg-white rounded-3xl shadow-lg p-6 border-l-8 hover:-translate-y-2 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 cursor-pointer">
 
         <div class="flex justify-between items-center">
             <div>
@@ -128,8 +130,7 @@ $userCount = $pdo->query("SELECT COUNT(*) FROM users WHERE role='etudiant'")->fe
     </div>
 
     <!-- Utilisateurs -->
-    <div class="group bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-500 cursor-pointer">
-
+    <div class="bg-white rounded-3xl shadow-lg p-6 border-l-8 hover:-translate-y-2 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 cursor-pointer">
         <div class="flex justify-between items-center">
             <div>
                 <p class="text-violet-700 text-sm uppercase tracking-[0.2em] font-semibold">
@@ -157,9 +158,8 @@ $userCount = $pdo->query("SELECT COUNT(*) FROM users WHERE role='etudiant'")->fe
 
     <?php
         $colors = [
-            "from-indigo-300 to-indigo-100",
-            "from-emerald-300 to-emerald-100",
-            "from-violet-300 to-violet-100"
+            "from-indigo-300 to-indigo-100"
+            // "from-emerald-300 to-emerald-100"
         ];
 
         $color = $colors[array_rand($colors)];
