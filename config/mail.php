@@ -22,7 +22,7 @@ function sendActivationMail($email, $fullname, $token)
         ];
 
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
+        $mail->Host = gethostbyname('smtp.gmail.com');
         $mail->SMTPAuth = true;
         $mail->Username = 'diopndeyemame1@gmail.com';
         $mail->Password = 'oojo gbdu juup dfsq';
@@ -309,7 +309,7 @@ function sendPasswordResetMail($email, $fullname, $token)
         ];
 
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
+        $mail->Host = gethostbyname('smtp.gmail.com');
         $mail->SMTPAuth = true;
         $mail->Username = 'diopndeyemame1@gmail.com';
         $mail->Password = 'oojo gbdu juup dfsq';
@@ -398,7 +398,7 @@ function sendAbsenceNotificationMail($email, $fullname, $subject, $title, $messa
         ];
 
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
+        $mail->Host = gethostbyname('smtp.gmail.com');
         $mail->SMTPAuth = true;
         $mail->Username = 'diopndeyemame1@gmail.com';
         $mail->Password = 'oojo gbdu juup dfsq';
