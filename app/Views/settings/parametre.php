@@ -67,6 +67,23 @@ $schedule = $scheduleModel->get();
 
             </div>
 
+            <!-- Messages d'erreur / succès -->
+            <?php if (isset($_SESSION['settings_error'])): ?>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4 flex items-center gap-2">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <?= htmlspecialchars($_SESSION['settings_error']) ?>
+                </div>
+                <?php unset($_SESSION['settings_error']); ?>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['settings_success'])): ?>
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-4 flex items-center gap-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <?= htmlspecialchars($_SESSION['settings_success']) ?>
+                </div>
+                <?php unset($_SESSION['settings_success']); ?>
+            <?php endif; ?>
+
             <!-- FORM -->
            <form method="POST" action="index.php?page=update_settings">
 
@@ -161,18 +178,18 @@ if (!empty($admin['photo'])) {
                     <div>
                         <label class="block mb-2 text-sm font-medium"><i class="bi bi-person-fill"></i> Nom de l'ecole </label>
                         <input
-    type="text"
-    name="company_name"
-    value="<?= htmlspecialchars($company['company_name'] ?? '') ?>"
-    class="w-full border rounded-xl px-4 py-3">
+                        type="text"
+                        name="company_name"
+                        value="<?= htmlspecialchars($company['company_name'] ?? '') ?>"
+                        class="w-full border rounded-xl px-4 py-3">
                     </div>
                     <div>
                         <label class="block mb-2 text-sm font-medium"><i class="bi bi-geo-alt-fill"></i> Email </label>
                        <input
-    type="email"
-    name="company_email"
-    value="<?= htmlspecialchars($company['company_email'] ?? '') ?>"
-    class="w-full border rounded-xl px-4 py-3">
+                       type="email"
+                       name="company_email"
+                       value="<?= htmlspecialchars($company['company_email'] ?? '') ?>"
+                       class="w-full border rounded-xl px-4 py-3">
                     </div>
                 </div>
 
@@ -304,6 +321,7 @@ if (!empty($admin['photo'])) {
             <input
                 type="password"
                 id="currentPassword"
+                name="current_password"
                 placeholder="Saisissez votre mot de passe actuel"
                 class="w-full border rounded-xl px-4 pr-12 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none">
 
@@ -331,6 +349,7 @@ if (!empty($admin['photo'])) {
                 <input
                     type="password"
                     id="newPassword"
+                    name="new_password"
                     placeholder="Nouveau mot de passe"
                     class="w-full border rounded-xl px-4 pr-12 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none">
 
@@ -355,6 +374,7 @@ if (!empty($admin['photo'])) {
                 <input
                     type="password"
                     id="confirmPassword"
+                    name="confirm_password"
                     placeholder="Confirmer le mot de passe"
                     class="w-full border rounded-xl px-4 pr-12 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none">
 

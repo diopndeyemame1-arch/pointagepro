@@ -24,8 +24,9 @@ if(session_status() === PHP_SESSION_NONE){
 <!-- Partie gauche -->
 <div class="hidden md:flex items-center justify-center bg-blue-900 min-h-[600px]">
 
-    <img
+    <img 
         src="/images/dashboard.png"
+        src="/COUR-TELLY-TECH/pointagepro/public/images/dashboards.png"
         alt="PointagePro"
         class="w-full h-full min-h-[600px] object-cover"
     >

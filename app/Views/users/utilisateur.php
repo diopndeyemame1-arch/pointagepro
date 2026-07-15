@@ -542,7 +542,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <button
                     type="submit"
-                    class="bg-green-700 text-white px-5 py-3 rounded-xl">
+                    class="bg-blue-700 text-white px-5 py-3 rounded-xl">
                     Enregistrer
                 </button>
 
