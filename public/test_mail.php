@@ -24,12 +24,13 @@ try {
     ];
 
     $mail->isSMTP();
-    $mail->Host = gethostbyname('smtp.gmail.com'); // Force IPv4 sur Render
+    $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'diopndeyemame1@gmail.com';
     $mail->Password = 'oojo gbdu juup dfsq';
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port = 587;
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Utiliser SSL au lieu de TLS
+    $mail->Port = 465; // Port 465
+    $mail->Timeout = 10; // Timeout de 10 secondes maximum
 
     $mail->setFrom('diopndeyemame1@gmail.com', 'PointagePro');
     $mail->addAddress($email_test, 'Test User');
