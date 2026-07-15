@@ -45,11 +45,11 @@ $user = $model->getUserById($_SESSION['user_id']);
             <div class="flex flex-col items-center">
 
 <?php
-$photoUrl = "/COUR-TELLY-TECH/pointagepro/public/images/swe.jpeg";
+$photoUrl = "/images/swe.jpeg";
 if (!empty($user['photo'])) {
-    $fullPath = $_SERVER['DOCUMENT_ROOT'] . "/COUR-TELLY-TECH/pointagepro/public/" . $user['photo'];
+    $fullPath = $_SERVER['DOCUMENT_ROOT'] . "/" . $user['photo'];
     if (file_exists($fullPath)) {
-        $photoUrl = "/COUR-TELLY-TECH/pointagepro/public/" . $user['photo'];
+        $photoUrl = "/" . $user['photo'];
     }
 }
 ?>

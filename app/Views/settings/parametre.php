@@ -104,15 +104,15 @@ $schedule = $scheduleModel->get();
             
                     <div class="relative">
                         <?php
-$photo = "/COUR-TELLY-TECH/pointagepro/public/uploads/6a3d2dfddd032.webp";
+$photo = "/uploads/6a3d2dfddd032.webp";
 
 if (!empty($admin['photo'])) {
 
     // La BDD stocke "uploads/nom_fichier"
-    $path = $_SERVER['DOCUMENT_ROOT'] . "/COUR-TELLY-TECH/pointagepro/public/" . $admin['photo'];
+    $path = $_SERVER['DOCUMENT_ROOT'] . "/" . $admin['photo'];
 
     if (file_exists($path)) {
-        $photo = "/COUR-TELLY-TECH/pointagepro/public/" . $admin['photo'];
+        $photo = "/" . $admin['photo'];
     }
 }
 ?>

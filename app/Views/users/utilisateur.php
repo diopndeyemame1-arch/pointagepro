@@ -359,9 +359,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     $photoUrl = null;
                                     if (!empty($user['photo'])) {
                                         // La BDD stocke déjà "uploads/nom_fichier"
-                                        $photoPath = $_SERVER['DOCUMENT_ROOT'] . "/COUR-TELLY-TECH/pointagepro/public/" . $user['photo'];
+                                        $photoPath = $_SERVER['DOCUMENT_ROOT'] . "/" . $user['photo'];
                                         if (file_exists($photoPath)) {
-                                            $photoUrl = "/COUR-TELLY-TECH/pointagepro/public/" . $user['photo'];
+                                            $photoUrl = "/" . $user['photo'];
                                         }
                                     }
                                     ?>
