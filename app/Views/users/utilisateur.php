@@ -99,7 +99,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     
     <!-- Contenu -->
-    <main class="flex-1 ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8">
+    <main class="flex-1 ml-64 p-4 sm:p-6 lg:p-8">
 
         <div class="bg-gradient-to-r from-blue-900 to-amber-700 rounded-3xl p-8 shadow-xl text-white mb-8">
 
@@ -355,8 +355,24 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-lg hover:-translate-y-1 hover:shadow-2xl transition">
                             <div class="flex justify-between items-start">
                                 <div class="flex items-center gap-4">
-                                    <img src="/<?= htmlspecialchars($user['photo'] ?? '') ?>"
-                                         class="w-16 h-16 rounded-full object-cover flex-shrink-0">
+                                    <?php
+                                    $photoUrl = null;
+                                    if (!empty($user['photo'])) {
+                                        // La BDD stocke déjà "uploads/nom_fichier"
+                                        $photoPath = $_SERVER['DOCUMENT_ROOT'] . "/COUR-TELLY-TECH/pointagepro/public/" . $user['photo'];
+                                        if (file_exists($photoPath)) {
+                                            $photoUrl = "/COUR-TELLY-TECH/pointagepro/public/" . $user['photo'];
+                                        }
+                                    }
+                                    ?>
+                                    <?php if ($photoUrl): ?>
+                                        <img src="<?= $photoUrl ?>"
+                                             class="w-16 h-16 rounded-full object-cover flex-shrink-0">
+                                    <?php else: ?>
+                                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                                            <?= strtoupper(substr($user['firstname'] ?? '', 0, 1)) ?>
+                                        </div>
+                                    <?php endif; ?>
                                     <div>
                                         <h3 class="font-bold text-lg">
                                             <?= htmlspecialchars(($user['firstname'] ?? '') . ' ' . ($user['lastname'] ?? '')) ?>

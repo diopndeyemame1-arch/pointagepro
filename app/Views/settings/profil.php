@@ -24,7 +24,7 @@ $user = $model->getUserById($_SESSION['user_id']);
          <?php require_once __DIR__ . '/../layouts/sidebar.php'; ?>
 
 
-    <main class="flex-1 ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8">
+    <main class="flex-1 ml-64 p-4 sm:p-6 lg:p-8">
 
     <!-- Titre -->
     <div class="mb-8">
@@ -45,13 +45,15 @@ $user = $model->getUserById($_SESSION['user_id']);
             <div class="flex flex-col items-center">
 
 <?php
-$photoPath = "/uploads/" . ($user['photo'] ?? '');
-
-if (empty($user['photo']) || !file_exists($_SERVER['DOCUMENT_ROOT'] . $photoPath)) {
-    $photoPath = "/images/swe.jpeg";
+$photoUrl = "/COUR-TELLY-TECH/pointagepro/public/images/swe.jpeg";
+if (!empty($user['photo'])) {
+    $fullPath = $_SERVER['DOCUMENT_ROOT'] . "/COUR-TELLY-TECH/pointagepro/public/" . $user['photo'];
+    if (file_exists($fullPath)) {
+        $photoUrl = "/COUR-TELLY-TECH/pointagepro/public/" . $user['photo'];
+    }
 }
 ?>
-<img src="<?= $photoPath ?>"
+<img src="<?= $photoUrl ?>"
      class="w-32 h-32 rounded-full border-4 border-green-500 object-cover">
 
                 <h3 class="mt-4 text-2xl font-bold">
