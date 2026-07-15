@@ -492,35 +492,37 @@ Sortie
 
 <!-- PAGINATION -->
 
+<?php
+$prevPage = max(1, $currentPage - 1);
+$nextPage = min($totalPages, $currentPage + 1);
+?>
+<div class="flex justify-center items-center mt-8 gap-2">
 
-<div class="flex justify-center mt-8 gap-2">
-
-
-<?php for($i=1;$i<=$totalPages;$i++): ?>
-
-
-<a href="index.php?page=presence_admin&p=<?=$i?>"
-
-class="px-4 py-2 rounded-xl font-semibold transition
-
-<?=($i==$currentPage)
-
-?'bg-[#1E4F86] text-white'
-
-:'bg-slate-100 hover:bg-[#8B5E3C] hover:text-white'
-
-?>">
-
-
-<?=$i?>
-
-
+<!-- PRECEDENT -->
+<a href="index.php?page=presence_admin&p=<?=$prevPage?>"
+   class="px-4 py-2 rounded-xl font-semibold border flex items-center gap-2 transition
+   <?= ($currentPage <= 1) ? 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none' : 'bg-slate-100 hover:bg-[#8B5E3C] hover:text-white' ?>">
+   <i class="bi bi-chevron-left"></i> Précédent
 </a>
 
-
-
+<!-- PAGES -->
+<?php for($i=1;$i<=$totalPages;$i++): ?>
+<a href="index.php?page=presence_admin&p=<?=$i?>"
+   class="px-4 py-2 rounded-xl font-semibold transition
+   <?=($i==$currentPage)
+   ?'bg-[#1E4F86] text-white'
+   :'bg-slate-100 hover:bg-[#8B5E3C] hover:text-white'
+   ?>">
+   <?=$i?>
+</a>
 <?php endfor; ?>
 
+<!-- SUIVANT -->
+<a href="index.php?page=presence_admin&p=<?=$nextPage?>"
+   class="px-4 py-2 rounded-xl font-semibold border flex items-center gap-2 transition
+   <?= ($currentPage >= $totalPages) ? 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none' : 'bg-slate-100 hover:bg-[#8B5E3C] hover:text-white' ?>">
+   Suivant <i class="bi bi-chevron-right"></i>
+</a>
 
 </div>
 

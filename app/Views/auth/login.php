@@ -81,10 +81,14 @@ if(session_status() === PHP_SESSION_NONE){
                              <i class="bi bi-lock absolute left-3 top-1/2 -translate-y-1/2 text-blue-700"></i>
                          
                              <input
-                                 type="password" name="password"
+                                 type="password" name="password" id="passwordInput"
                                  placeholder="********"
-                                 class="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                 class="w-full border border-gray-300 rounded-xl pl-10 pr-12 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500"
                              >
+                             <button type="button" onclick="togglePassword()"
+                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-700 transition">
+                                 <i id="togglePasswordIcon" class="bi bi-eye"></i>
+                             </button>
                         </div>
                     </div>
 
@@ -109,6 +113,22 @@ if(session_status() === PHP_SESSION_NONE){
         </div>
 
     </div>
+
+<script>
+function togglePassword() {
+    const input = document.getElementById('passwordInput');
+    const icon = document.getElementById('togglePasswordIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    }
+}
+</script>
 
 </body>
 </html>

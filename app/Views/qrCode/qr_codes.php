@@ -147,8 +147,6 @@ QR
 
 
 
-
-
 <!-- ================= KPI ================= -->
 
 
@@ -216,7 +214,6 @@ flex items-center justify-center">
 
 
 
-
 <!-- SCANS -->
 
 
@@ -275,8 +272,6 @@ flex items-center justify-center">
 
 
 
-
-
 <!-- PRESENTS -->
 
 
@@ -327,8 +322,6 @@ flex items-center justify-center">
 
 
 </div>
-
-
 
 
 
@@ -402,8 +395,6 @@ flex">
 
 
 
-
-
 <!-- ================= QR + SCANNER ================= -->
 
 
@@ -438,7 +429,6 @@ QR Code actif
 
 
 
-
 <form action="index.php?page=qr_code&action=generate"
 method="POST">
 
@@ -466,8 +456,6 @@ Générer
 
 
 </div>
-
-
 
 
 
@@ -510,8 +498,6 @@ Aucun QR généré
 
 
 <?php endif; ?>
-
-
 
 
 
@@ -579,6 +565,7 @@ Scanner un QR Code
 <div id="reader"
 
 class="w-full h-[450px]
+lg:h-[600px]
 border-4 border-[#1E4F86]
 rounded-2xl overflow-hidden">
 
@@ -595,7 +582,6 @@ class="mt-5 text-center font-semibold text-lg">
 
 
 </p>
-
 
 
 
@@ -626,8 +612,6 @@ Activer
 
 
 </button>
-
-
 
 
 
@@ -674,8 +658,6 @@ Arrêter
 
 
 
-
-
 <!-- ================= HISTORIQUE ================= -->
 
 
@@ -701,7 +683,6 @@ Historique des scans
 
 
 </div>
-
 
 
 
@@ -803,9 +784,9 @@ Statut
 </td>
 
 <td class="p-4">
-<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">
-<i class="bi bi-check-circle"></i>
-<?= htmlspecialchars(($scan['status'] ?? 'present') === 'retard' ? 'Retard' : 'PrÃ©sent') ?>
+<span class="<?= ($scan['status'] ?? 'present') === 'retard' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700' ?> px-3 py-1 rounded-full">
+<i class="bi <?= ($scan['status'] ?? 'present') === 'retard' ? 'bi-clock-history' : 'bi-check-circle' ?>"></i>
+<?= htmlspecialchars(($scan['status'] ?? 'present') === 'retard' ? 'Retard' : 'Present') ?>
 </span>
 </td>
 
@@ -851,10 +832,7 @@ Aucun scan enregistré
 
 
 
-
 </main>
-
-
 
 
 
@@ -869,6 +847,7 @@ let html5QrCode = new Html5Qrcode("reader");
 
 
 let dernierQr = "";
+let scannerStarted = false;
 
 
 
@@ -882,6 +861,14 @@ let dernierQr = "";
 document
 .getElementById("btnStart")
 .addEventListener("click",function(){
+
+if(scannerStarted){
+
+return;
+
+}
+
+scannerStarted = true;
 
 
 
@@ -913,11 +900,10 @@ cameras[0].id,
 
 fps:10,
 
-qrbox:250
+qrbox:{ width:350, height:350 }
 
 
 },
-
 
 
 
@@ -937,7 +923,6 @@ return;
 
 
 dernierQr = decodedText;
-
 
 
 
@@ -980,8 +965,8 @@ body:
 
 
 
-);
 
+);
 
 
 
@@ -1029,10 +1014,6 @@ return;
 
 
 
-
-
-
-
 if(!data.success){
 
 
@@ -1053,35 +1034,30 @@ return;
 
 
 
+const isLate2 = data.etudiant && data.etudiant.status === "retard";
 
-
-
-
-document.getElementById("result").innerHTML=
-
-
-`
-
-<span class="text-green-700">
-
-<i class="bi bi-check-circle-fill"></i>
-
+let resultHtml = `
+<span class="${isLate2 ? "text-orange-700" : "text-green-700"}">
+<i class="bi ${isLate2 ? "bi-clock-history" : "bi-check-circle-fill"}"></i>
 ${data.etudiant.firstname}
-
 ${data.etudiant.lastname}
-
-Présent
-
+${isLate2 ? 'Retard' : 'Présent'}
 </span>
-
 `;
 
+if (data.course_ended && data.end_time) {
+resultHtml += `
+<div class="mt-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+<i class="bi bi-exclamation-triangle-fill"></i>
+Attention : Le cours de cet étudiant était prévu jusqu'à ${data.end_time.substring(0, 5)}.
+Son heure de cours est déjà terminée pour aujourd'hui !
+</div>
+`;
+}
 
-
-
+document.getElementById("result").innerHTML = resultHtml;
 
 ajouterLigne(data.etudiant);
-
 
 
 
@@ -1095,6 +1071,7 @@ catch(error){
 
 
 console.error(error);
+
 
 
 
@@ -1120,11 +1097,7 @@ console.error(error);
 
 });
 
-
-
 });
-
-
 
 
 
@@ -1185,8 +1158,6 @@ console.log(err);
 
 
 
-
-
 // ====================
 // AJOUT HISTORIQUE
 // ====================
@@ -1213,8 +1184,6 @@ tbody.innerHTML="";
 
 
 
-
-
 let maintenant = new Date();
 
 
@@ -1229,8 +1198,7 @@ etudiant.check_in || maintenant.toLocaleTimeString("fr-FR");
 
 
 
-
-
+const isLateRow = etudiant.status === "retard";
 
 
 
@@ -1292,25 +1260,22 @@ ${heure}
 
 
 
-
 <td class="p-4">
 
 
 <span
 
-class="bg-green-100
-
-text-green-700
+class="${isLateRow ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}
 
 px-3 py-1
 
 rounded-full">
 
 
-<i class="bi bi-check-circle"></i>
+<i class="bi ${isLateRow ? 'bi-clock-history' : 'bi-check-circle'}"></i>
 
 
-Présent
+${isLateRow ? 'Retard' : 'Présent'}
 
 
 </span>

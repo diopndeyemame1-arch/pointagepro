@@ -50,6 +50,8 @@ shadow-2xl
 z-50
 overflow-x-auto
 lg:overflow-x-hidden
+lg:flex
+lg:flex-col
 ">
 
 
@@ -61,6 +63,7 @@ border-b
 border-white/10
 hidden
 lg:block
+flex-shrink-0
 ">
 
 
@@ -104,8 +107,9 @@ Gestion intelligente des présences
 </div>
 
 
+<!-- ================= ZONE SCROLLABLE ================= -->
 
-
+<div class="flex-1 overflow-y-auto lg:pb-0">
 
 <!-- ================= MENU ADMIN ================= -->
 
@@ -334,8 +338,6 @@ duration-300
 
 
 
-
-
 <!-- ================= MENU ETUDIANT ================= -->
 
 
@@ -479,27 +481,47 @@ text-xl
 
 <?php endif; ?>
 
+</div>
 
 
+<!-- ================= PROFIL ADMIN (EN BAS) ================= -->
 
+<?php if($role == 'admin' && isset($_SESSION['admin'])): 
+$admin = $_SESSION['admin'];
+$photoName = $admin['photo'] ?? '';
+$avatarUrl = 'https://ui-avatars.com/api/?name=' . urlencode($admin['name']) . '&background=B8863A&color=fff&size=96';
+if (!empty($photoName)) {
+    $fullPath = $_SERVER['DOCUMENT_ROOT'] . '/COUR-TELLY-TECH/pointagepro/public/' . $photoName;
+    if (file_exists($fullPath)) {
+        $avatarUrl = '/COUR-TELLY-TECH/pointagepro/public/' . $photoName;
+    }
+}
+?>
+<div class="hidden lg:block border-t border-white/10 mx-4 pt-3 pb-2 flex-shrink-0">
+    <div class="flex items-center gap-3 px-2">
+        <img src="<?= $avatarUrl ?>"
+             onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($admin['name']) ?>&background=B8863A&color=fff&size=96'"
+             class="w-10 h-10 rounded-full object-cover border-2 border-[#B8863A] flex-shrink-0">
+        <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold truncate"><?= htmlspecialchars($admin['name']) ?></p>
+            <p class="text-xs text-slate-400 truncate"><?= htmlspecialchars($admin['email']) ?></p>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 
 <!-- ================= LOGOUT ================= -->
 
 
 <div class="
-absolute
-bottom-6
-left-4
-right-4
 hidden
 lg:block
-">
-
-
-<hr class="
+flex-shrink-0
+border-t
 border-white/20
-mb-0.03
+px-4
+py-3
 ">
 
 

@@ -138,34 +138,53 @@ class QrCodeModel
         }
 
         $existing = $this->findAttendance($student['id'], $date);
+        $status = $this->getAttendanceStatus($student['cohort_id'], $date, $time);
+        $finalStatus = $existing['status'] ?? $status;
 
         if ($existing) {
             $stmt = $this->pdo->prepare("
                 UPDATE attendances
-                SET status = 'present',
+                SET status = :status,
                     check_in = COALESCE(check_in, :time)
                 WHERE id = :id
             ");
             $stmt->execute([
+                ':status' => $finalStatus,
                 ':time' => $time,
                 ':id' => $existing['id'],
             ]);
         } else {
             $stmt = $this->pdo->prepare("
                 INSERT INTO attendances (user_id, date, check_in, status)
-                VALUES (:user_id, :date, :check_in, 'present')
+                VALUES (:user_id, :date, :check_in, :status)
             ");
             $stmt->execute([
                 ':user_id' => $student['id'],
                 ':date' => $date,
                 ':check_in' => $time,
+                ':status' => $status,
             ]);
+        }
+
+        $schedule = $this->getScheduleForToday($student['cohort_id'], $date);
+        $courseEnded = false;
+        $endTime = null;
+
+        if ($schedule && !empty($schedule['end_time'])) {
+            $endTime = $schedule['end_time'];
+            if (strtotime($time) > strtotime($endTime)) {
+                $courseEnded = true;
+            }
         }
 
         return [
             'success' => true,
-            'message' => $existing ? 'Presence deja enregistree aujourd hui.' : 'Presence enregistree.',
-            'etudiant' => $this->formatStudent($student, $date, $existing['check_in'] ?? $time, 'present'),
+            'course_ended' => $courseEnded,
+            'end_time' => $endTime,
+            'message' => $existing
+                ? 'Pointage deja enregistre aujourd hui.'
+                : ($status === 'retard' ? 'Retard enregistre.' : 'Presence enregistree.'),
+            'etudiant' => $this->formatStudent($student, $date, $existing['check_in'] ?? $time, $finalStatus),
         ];
     }
 
@@ -256,6 +275,42 @@ class QrCodeModel
         ]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    private function getScheduleForToday($cohortId, $date)
+    {
+        $days = [
+            1 => 'Lundi', 2 => 'Mardi', 3 => 'Mercredi', 4 => 'Jeudi',
+            5 => 'Vendredi', 6 => 'Samedi', 7 => 'Dimanche',
+        ];
+        $day = $days[(int) date('N', strtotime($date))] ?? null;
+
+        if (!$cohortId || !$day) {
+            return null;
+        }
+
+        $stmt = $this->pdo->prepare('
+            SELECT start_time, end_time
+            FROM cohort_schedules
+            WHERE cohort_id = :cohort_id
+              AND LOWER(day) = LOWER(:day)
+            ORDER BY start_time ASC
+            LIMIT 1
+        ');
+        $stmt->execute([':cohort_id' => $cohortId, ':day' => $day]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    private function getAttendanceStatus($cohortId, $date, $checkIn)
+    {
+        $schedule = $this->getScheduleForToday($cohortId, $date);
+
+        if (!$schedule || !$schedule['start_time']) {
+            return 'present';
+        }
+
+        return strtotime($checkIn) > strtotime($schedule['start_time']) ? 'retard' : 'present';
     }
 
     private function formatStudent(array $student, $date, $checkIn, $status)

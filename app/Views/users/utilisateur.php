@@ -284,7 +284,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </button>
 
                 <button type="submit"
-                        class="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-xl flex items-center gap-2">
+                        class="bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-xl flex items-center gap-2">
                     <i class="bi bi-check-circle"></i>
                     Enregistrer
                 </button>

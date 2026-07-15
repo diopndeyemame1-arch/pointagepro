@@ -601,49 +601,39 @@ text-2xl">
 
 <!-- PAGINATION -->
 
-
-<div class="flex justify-center gap-2 p-6">
-
-
-<?php 
-
+<?php
 $totalPages = $totalPages ?? 1;
-
-
-for($i=1;$i<=$totalPages;$i++): 
-
+$currentPage = (int)($page ?? 1);
+$prevPage = max(1, $currentPage - 1);
+$nextPage = min($totalPages, $currentPage + 1);
 ?>
+<div class="flex justify-center items-center gap-2 p-6">
 
-
-<a href="index.php?page=holiday&p=<?=$i?><?= $selectedMonth ? '&month=' . urlencode($selectedMonth) : '' ?>"
-
-class="
-w-10 h-10 rounded-xl
-flex items-center justify-center
-
-border
-
-transition duration-300
-
-<?= ($page==$i)
-
-?'bg-[#1E4F86] text-white'
-
-:'bg-white hover:bg-[#8B5E3C] hover:text-white'
-
-?>
-
-">
-
-
-<?=$i?>
-
-
+<!-- PRECEDENT -->
+<a href="index.php?page=holiday&p=<?=$prevPage?><?= $selectedMonth ? '&month=' . urlencode($selectedMonth) : '' ?>"
+   class="px-4 py-2 rounded-xl border flex items-center gap-2 transition
+   <?= ($currentPage <= 1) ? 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none' : 'bg-white hover:bg-[#8B5E3C] hover:text-white' ?>">
+   <i class="bi bi-chevron-left"></i> Précédent
 </a>
 
-
+<!-- PAGES -->
+<?php for($i=1;$i<=$totalPages;$i++): ?>
+<a href="index.php?page=holiday&p=<?=$i?><?= $selectedMonth ? '&month=' . urlencode($selectedMonth) : '' ?>"
+   class="w-10 h-10 rounded-xl flex items-center justify-center border transition duration-300
+   <?= ($currentPage==$i)
+   ?'bg-[#1E4F86] text-white'
+   :'bg-white hover:bg-[#8B5E3C] hover:text-white'
+   ?>">
+   <?=$i?>
+</a>
 <?php endfor; ?>
 
+<!-- SUIVANT -->
+<a href="index.php?page=holiday&p=<?=$nextPage?><?= $selectedMonth ? '&month=' . urlencode($selectedMonth) : '' ?>"
+   class="px-4 py-2 rounded-xl border flex items-center gap-2 transition
+   <?= ($currentPage >= $totalPages) ? 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none' : 'bg-white hover:bg-[#8B5E3C] hover:text-white' ?>">
+   Suivant <i class="bi bi-chevron-right"></i>
+</a>
 
 </div>
 

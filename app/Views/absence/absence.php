@@ -318,22 +318,16 @@ class="border rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1E4F86]">
 <select name="department"
 class="border rounded-xl px-4 py-3">
 
-
 <option value="">
 Tous départements
 </option>
 
-
+<?php $selectedDept = $_GET['department'] ?? ''; ?>
 <?php foreach($departments as $department): ?>
-
-<option value="<?= $department['id'] ?>">
-
+<option value="<?= $department['id'] ?>" <?= ((string)$selectedDept === (string)$department['id']) ? 'selected' : '' ?>>
 <?= htmlspecialchars($department['name']) ?>
-
 </option>
-
 <?php endforeach; ?>
-
 
 </select>
 
@@ -346,24 +340,16 @@ Tous départements
 <select name="cohort"
 class="border rounded-xl px-4 py-3">
 
-
 <option value="">
 Toutes cohortes
 </option>
 
-
+<?php $selectedCohort = $_GET['cohort'] ?? ''; ?>
 <?php foreach($cohorts as $cohort): ?>
-
-
-<option value="<?= $cohort['id'] ?>">
-
+<option value="<?= $cohort['id'] ?>" <?= ((string)$selectedCohort === (string)$cohort['id']) ? 'selected' : '' ?>>
 <?= htmlspecialchars($cohort['name']) ?>
-
 </option>
-
-
 <?php endforeach; ?>
-
 
 </select>
 
@@ -628,33 +614,48 @@ Traité
 <!-- PAGINATION -->
 
 
-<div class="flex justify-center gap-2 p-6">
+<?php
+$filterParams = '';
+if (!empty($_GET['department'])) {
+    $filterParams .= '&department=' . urlencode($_GET['department']);
+}
+if (!empty($_GET['cohort'])) {
+    $filterParams .= '&cohort=' . urlencode($_GET['cohort']);
+}
+if (!empty($_GET['search'])) {
+    $filterParams .= '&search=' . urlencode($_GET['search']);
+}
 
+$prevPage = max(1, $currentPage - 1);
+$nextPage = min($totalPages, $currentPage + 1);
+?>
+<div class="flex justify-center items-center gap-2 p-6">
 
-<?php for($i=1;$i<=$totalPages;$i++): ?>
-
-
-<a href="index.php?page=absence_admin&p=<?=$i?>"
-
-class="w-10 h-10 rounded-xl flex items-center justify-center border transition
-
-<?=($currentPage==$i)
-
-?'bg-[#1E4F86] text-white'
-
-:'hover:bg-[#8B5E3C] hover:text-white'
-
-?>">
-
-
-<?=$i?>
-
-
+<!-- PRECEDENT -->
+<a href="index.php?page=absence_admin&p=<?=$prevPage?><?= $filterParams ?>"
+   class="px-4 py-2 rounded-xl border flex items-center gap-2 transition
+   <?= ($currentPage <= 1) ? 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none' : 'hover:bg-[#8B5E3C] hover:text-white' ?>">
+   <i class="bi bi-chevron-left"></i> Précédent
 </a>
 
-
+<!-- PAGES -->
+<?php for($i=1;$i<=$totalPages;$i++): ?>
+<a href="index.php?page=absence_admin&p=<?=$i?><?= $filterParams ?>"
+   class="w-10 h-10 rounded-xl flex items-center justify-center border transition
+   <?=($currentPage==$i)
+   ?'bg-[#1E4F86] text-white'
+   :'hover:bg-[#8B5E3C] hover:text-white'
+   ?>">
+   <?=$i?>
+</a>
 <?php endfor; ?>
 
+<!-- SUIVANT -->
+<a href="index.php?page=absence_admin&p=<?=$nextPage?><?= $filterParams ?>"
+   class="px-4 py-2 rounded-xl border flex items-center gap-2 transition
+   <?= ($currentPage >= $totalPages) ? 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none' : 'hover:bg-[#8B5E3C] hover:text-white' ?>">
+   Suivant <i class="bi bi-chevron-right"></i>
+</a>
 
 </div>
 

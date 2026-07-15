@@ -354,9 +354,8 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
 
                 </div>
 
-                
                   
-
+                   
             </div>
 
         </div>
@@ -527,8 +526,6 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
 
 
     <!-- Camembert -->
-
-
 
 
 
@@ -990,123 +987,135 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
 
     </div>
 
-    <?php if ($totalPages > 1): ?>
-        <div class="flex flex-wrap justify-center items-center gap-2 px-6 py-5 border-t">
-            <a href="index.php?<?= htmlspecialchars(http_build_query(array_merge($paginationParams, ['p' => max(1, $currentPage - 1)]))) ?>"
-               class="<?= ($currentPage === 1) ? 'pointer-events-none opacity-50' : '' ?> inline-flex items-center gap-2 px-4 py-2 border rounded-2xl bg-white hover:bg-slate-50 transition">
-                <i class="bi bi-chevron-left"></i>
-                Precedent
-            </a>
+    <?php if ($totalRows > 0): ?>
+    <div class="px-6 py-5 border-t bg-gradient-to-r from-slate-50 to-white">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Info page -->
+            <div class="text-sm text-slate-500 font-medium flex items-center gap-2">
+                <i class="bi bi-layout-text-window text-blue-900"></i>
+                Page <span class="text-blue-900 font-bold"><?= $currentPage ?></span> sur <span class="text-blue-900 font-bold"><?= $totalPages ?></span>
+                <span class="hidden sm:inline text-slate-400">(<?= $totalRows ?> résultat<?= $totalRows > 1 ? 's' : '' ?>)</span>
+            </div>
 
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="index.php?<?= htmlspecialchars(http_build_query(array_merge($paginationParams, ['p' => $i]))) ?>"
-                   class="w-10 h-10 flex items-center justify-center border rounded-2xl <?= ($currentPage === $i) ? 'bg-blue-900 text-white border-blue-900' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50' ?> transition">
-                    <?= $i ?>
+            <!-- Navigation -->
+            <div class="flex items-center gap-1.5">
+                
+                <!-- Premier -->
+                <a href="index.php?<?= htmlspecialchars(http_build_query(array_merge($paginationParams, ['p' => 1]))) ?>"
+                   class="<?= ($currentPage === 1) ? 'pointer-events-none opacity-30' : '' ?> w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 hover:text-blue-900 hover:border-blue-200 transition-all duration-200 shadow-sm hover:shadow-md"
+                   title="Première page">
+                    <i class="bi bi-chevron-double-left text-sm"></i>
                 </a>
-            <?php endfor; ?>
+                
+                <!-- Précédent -->
+                <a href="index.php?<?= htmlspecialchars(http_build_query(array_merge($paginationParams, ['p' => max(1, $currentPage - 1)]))) ?>"
+                   class="<?= ($currentPage === 1) ? 'pointer-events-none opacity-30' : '' ?> w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 hover:text-blue-900 hover:border-blue-200 transition-all duration-200 shadow-sm hover:shadow-md"
+                   title="Page précédente">
+                    <i class="bi bi-chevron-left text-sm"></i>
+                </a>
 
-            <a href="index.php?<?= htmlspecialchars(http_build_query(array_merge($paginationParams, ['p' => min($totalPages, $currentPage + 1)]))) ?>"
-               class="<?= ($currentPage === $totalPages) ? 'pointer-events-none opacity-50' : '' ?> inline-flex items-center gap-2 px-4 py-2 border rounded-2xl bg-white hover:bg-slate-50 transition">
-                Suivant
-                <i class="bi bi-chevron-right"></i>
-            </a>
+                <!-- Pages numérotées -->
+                <?php
+                $startPage = max(1, min($currentPage - 2, $totalPages - 4));
+                $endPage = min($totalPages, $startPage + 4);
+                if ($startPage > 1): ?>
+                    <span class="px-1 text-slate-400 text-sm font-medium">...</span>
+                <?php endif; ?>
+
+                <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                    <a href="index.php?<?= htmlspecialchars(http_build_query(array_merge($paginationParams, ['p' => $i]))) ?>"
+                       class="w-9 h-9 flex items-center justify-center rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm <?= ($currentPage === $i) 
+                           ? 'bg-gradient-to-br from-blue-900 to-blue-700 text-white shadow-blue-200 border-0 scale-110' 
+                           : 'border border-slate-200 bg-white text-slate-600 hover:bg-blue-50 hover:text-blue-900 hover:border-blue-200 hover:shadow-md hover:-translate-y-0.5' ?>">
+                        <?= $i ?>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($endPage < $totalPages): ?>
+                    <span class="px-1 text-slate-400 text-sm font-medium">...</span>
+                <?php endif; ?>
+
+                <!-- Suivant -->
+                <a href="index.php?<?= htmlspecialchars(http_build_query(array_merge($paginationParams, ['p' => min($totalPages, $currentPage + 1)]))) ?>"
+                   class="<?= ($currentPage === $totalPages) ? 'pointer-events-none opacity-30' : '' ?> w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 hover:text-blue-900 hover:border-blue-200 transition-all duration-200 shadow-sm hover:shadow-md"
+                   title="Page suivante">
+                    <i class="bi bi-chevron-right text-sm"></i>
+                </a>
+                
+                <!-- Dernier -->
+                <a href="index.php?<?= htmlspecialchars(http_build_query(array_merge($paginationParams, ['p' => $totalPages]))) ?>"
+                   class="<?= ($currentPage === $totalPages) ? 'pointer-events-none opacity-30' : '' ?> w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 hover:text-blue-900 hover:border-blue-200 transition-all duration-200 shadow-sm hover:shadow-md"
+                   title="Dernière page">
+                    <i class="bi bi-chevron-double-right text-sm"></i>
+                </a>
+
+                <!-- Aller à -->
+                <div class="hidden sm:flex items-center gap-2 ml-3 pl-3 border-l border-slate-200">
+                    <span class="text-xs text-slate-400">Aller à</span>
+                    <form method="GET" action="index.php" class="flex items-center gap-1">
+                        <?php foreach ($paginationParams as $key => $value): ?>
+                            <?php if ($key !== 'p'): ?>
+                                <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        <input type="number" name="p" min="1" max="<?= $totalPages ?>" value="<?= $currentPage ?>"
+                               class="w-14 h-9 text-center border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-900 focus:border-blue-900 transition outline-none shadow-sm">
+                        <button type="submit"
+                                class="h-9 px-3 bg-gradient-to-br from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 text-white text-xs font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
         </div>
+    </div>
     <?php endif; ?>
 
 </div>
 
 </div>
 
-
 <script>
-
-
-
-
-
-
-
-
-
-
-
-
-new Chart(document.getElementById("barChart"),{
-
-type:"bar",
-
-data:{
-
-labels:[
-
-"Dév Web",
-"Bureautique",
-"Marketing"
-
-],
-
-datasets:[{
-
-label:"Présences",
-
-backgroundColor:"#1E3A8A",
-
-data:[95,82,76]
-
-},
-
-{
-
-label:"Retards",
-
-backgroundColor:"#8B5E3C",
-
-data:[5,12,18]
-
-},
-
-{
-
-label:"Absences",
-
-backgroundColor:"#DC2626",
-
-data:[2,5,7]
-
-}
-
-]
-
-},
-
-options:{
-
-responsive:true,
-
-plugins:{
-
-legend:{
-
-position:"top"
-
-}
-
-}
-
-}
-
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('barChart');
+    if (!ctx) return;
+    
+    const labels = <?= json_encode($chartLabels, JSON_UNESCAPED_UNICODE) ?>;
+    if (labels.length === 0) {
+        ctx.parentElement.innerHTML = '<p class="text-center text-gray-400 py-8">Aucune donnée à afficher dans le graphique</p>';
+        return;
+    }
+    
+    new Chart(ctx, {
+        type:"bar",
+        data:{
+            labels: labels,
+            datasets:[{
+                label:"Présences",
+                backgroundColor:"#1E3A8A",
+                data:<?= json_encode($chartPresent) ?>
+            },
+            {
+                label:"Retards",
+                backgroundColor:"#8B5E3C",
+                data:<?= json_encode($chartLate) ?>
+            },
+            {
+                label:"Absences",
+                backgroundColor:"#DC2626",
+                data:<?= json_encode($chartAbsent) ?>
+            }]
+        },
+        options:{
+            responsive:true,
+            plugins:{
+                legend:{
+                    position:"top"
+                }
+            }
+        }
+    });
 });
-
-</script>
-
-<script>
-const reportChart = Chart.getChart("barChart");
-if (reportChart) {
-    reportChart.data.labels = <?= json_encode($chartLabels, JSON_UNESCAPED_UNICODE) ?>;
-    reportChart.data.datasets[0].label = "Presences";
-    reportChart.data.datasets[0].data = <?= json_encode($chartPresent) ?>;
-    reportChart.data.datasets[1].data = <?= json_encode($chartLate) ?>;
-    reportChart.data.datasets[2].data = <?= json_encode($chartAbsent) ?>;
-    reportChart.update();
-}
 </script>
