@@ -24,7 +24,7 @@ try {
     ];
 
     $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
+    $mail->Host = gethostbyname('smtp.gmail.com'); // Force IPv4 sur Render
     $mail->SMTPAuth = true;
     $mail->Username = 'diopndeyemame1@gmail.com';
     $mail->Password = 'oojo gbdu juup dfsq';
