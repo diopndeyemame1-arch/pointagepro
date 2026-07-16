@@ -35,9 +35,11 @@ exit;
     if (strtolower(trim($role)) === 'etudiant') {
         $token = bin2hex(random_bytes(32));
         $is_active = 0;
+        $is_verified = 0;
     } else {
         $token = null;
         $is_active = 1; // admins or other roles active by default
+        $is_verified = 1;
     }
 
     $password = $_POST['password'] ?? null;
@@ -61,8 +63,8 @@ exit;
     }
 
     $sql = "INSERT INTO users 
-    (firstname, lastname, email, phone, department_id, cohort_id, role, photo, activation_token, is_active, password_hash)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (firstname, lastname, email, phone, department_id, cohort_id, role, photo, activation_token, is_active, is_verified, password_hash)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     RETURNING id";
 
     $stmt = $this->pdo->prepare($sql);
@@ -78,6 +80,7 @@ exit;
         $photoPath,
         $token,
         (int)$is_active,
+        (int)$is_verified,
         $password_hash
     ]);
 
