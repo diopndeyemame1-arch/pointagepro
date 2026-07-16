@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $role = $_SESSION['role'] ?? '';
 $page = $_GET['page'] ?? '';
 ?>
-<link rel="stylesheet" href="/COUR-TELLY-TECH/pointagepro/public/assets/css/responsive.css">
+<link rel="stylesheet" href="assets/css/responsive.css">
 
 <!-- Mobile overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
@@ -184,6 +184,16 @@ foreach($menus as $menu):
 </div>
 
 <script>
+// Toggle sidebar open/closed on mobile
+function toggleSidebar() {
+    const sidebar = document.getElementById('mainSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (sidebar && overlay) {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+    }
+}
+
 // Add has-mobile-tab class to main content on mobile
 function addMobileTabPadding() {
     const mainElements = document.querySelectorAll('main');
