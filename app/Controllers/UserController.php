@@ -40,6 +40,9 @@ exit;
         $is_active = 1; // admins or other roles active by default
     }
 
+    $password = $_POST['password'] ?? null;
+    $password_hash = !empty($password) ? password_hash($password, PASSWORD_DEFAULT) : null;
+
     $photoPath = null;
 
     if (!empty($_FILES['photo']['name'])) {
@@ -58,8 +61,8 @@ exit;
     }
 
     $sql = "INSERT INTO users 
-    (firstname, lastname, email, phone, department_id, cohort_id, role, photo, activation_token, is_active)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (firstname, lastname, email, phone, department_id, cohort_id, role, photo, activation_token, is_active, password_hash)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     RETURNING id";
 
     $stmt = $this->pdo->prepare($sql);
@@ -74,7 +77,8 @@ exit;
         $role,
         $photoPath,
         $token,
-        (int)$is_active
+        (int)$is_active,
+        $password_hash
     ]);
 
     $createdUserId = $stmt->fetchColumn();
