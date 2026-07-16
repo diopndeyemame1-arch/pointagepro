@@ -1,52 +1,52 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/mail.php';
+echo "<h2>Test d'envoi d'e-mail via l'API Brevo</h2>";
 
-echo "<h2>Test d'envoi d'e-mail de diagnostic</h2>";
-
-// On récupère l'email passé dans l'URL (?email=...) ou on utilise une adresse par défaut
 $email_test = $_GET['email'] ?? 'diopndeyemame1@gmail.com';
+$apiKey = $_GET['key'] ?? getenv('BREVO_API_KEY'); // Lit depuis l'URL ou la variable d'environnement
 
-echo "<p>Tentative d'envoi d'un e-mail de test vers : <strong>" . htmlspecialchars($email_test) . "</strong></p>";
+if (!$apiKey) {
+    die("<h3 style='color:red;'>❌ Erreur : Clé API Brevo manquante. Ajoutez la clé dans l'URL : ?email=$email_test&key=xkeysib-...</h3>");
+}
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+echo "<p>Tentative d'envoi vers : <strong>" . htmlspecialchars($email_test) . "</strong></p>";
 
-$mail = new PHPMailer(true);
-
-try {
-    $mail->SMTPDebug = 3; // Debugging détaillé
-    $mail->Debugoutput = 'html';
-
-    $mail->SMTPOptions = [
-        'ssl' => [
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-            'allow_self_signed' => true
+$data = [
+    'sender' => [
+        'name' => 'PointagePro',
+        'email' => 'modou.expert.it@gmail.com'
+    ],
+    'to' => [
+        [
+            'email' => $email_test,
+            'name' => 'Destinataire Test'
         ]
-    ];
+    ],
+    'subject' => 'Diagnostic API Brevo - PointagePro',
+    'htmlContent' => '<h3>Test réussi !</h3><p>Ceci est un e-mail envoyé via l\'API HTTP Brevo depuis Render.</p>'
+];
 
-    $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com'; // Utiliser le domaine pour permettre le fallback automatique de PHPMailer
-    $mail->SMTPAuth = true;
-    $mail->Username = 'diopndeyemame1@gmail.com';
-    $mail->Password = 'oojo gbdu juup dfsq';
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Utiliser SSL
-    $mail->Port = 465; // Port sécurisé 465
-    $mail->Timeout = 10;
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://api.brevo.com/v3/smtp/email');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'api-key: ' . $apiKey,
+    'content-type: application/json',
+    'accept: application/json'
+]);
 
-    $mail->setFrom('diopndeyemame1@gmail.com', 'PointagePro');
-    $mail->addAddress($email_test, 'Utilisateur Test');
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
 
-    $mail->isHTML(true);
-    $mail->Subject = "Diagnostic SMTP PointagePro";
-    $mail->Body    = "Ceci est un e-mail de diagnostic envoyé par le script de test.";
+echo "<h3>Retour de l'API Brevo :</h3>";
+echo "<b>Code HTTP :</b> " . $httpCode . "<br>";
+echo "<b>Réponse :</b> <pre>" . htmlspecialchars($response) . "</pre>";
 
-    $mail->send();
-    echo "<h3 style='color:green;'>✅ Succès ! L'e-mail a bien été envoyé et accepté par le serveur pour $email_test.</h3>";
-
-} catch (Exception $e) {
+if ($httpCode >= 200 && $httpCode < 300) {
+    echo "<h3 style='color:green;'>✅ Succès ! L'e-mail a bien été envoyé via l'API Brevo.</h3>";
+} else {
     echo "<h3 style='color:red;'>❌ Échec de l'envoi de l'e-mail.</h3>";
-    echo "<b>Erreur :</b> " . $e->getMessage() . "<br>";
-    echo "<b>Infos PHPMailer :</b> " . $mail->ErrorInfo;
 }
