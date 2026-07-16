@@ -24,7 +24,7 @@ $user = $model->getUserById($_SESSION['user_id']);
          <?php require_once __DIR__ . '/../layouts/sidebar.php'; ?>
 
 
-    <main class="flex-1 ml-64 p-4 sm:p-6 lg:p-8">
+    <main class="flex-1 ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8">
 
     <!-- Titre -->
     <div class="mb-8">

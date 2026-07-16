@@ -99,7 +99,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     
     <!-- Contenu -->
-    <main class="flex-1 ml-64 p-4 sm:p-6 lg:p-8">
+    <main class="flex-1 ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8">
 
         <div class="bg-gradient-to-r from-blue-900 to-amber-700 rounded-3xl p-8 shadow-xl text-white mb-8">
 
@@ -471,7 +471,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <input type="hidden" name="id" id="edit_id">
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 <div>
                     <label>Prénom</label>

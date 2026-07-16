@@ -1,0 +1,232 @@
+/* ============================================
+   PointagePro - Responsive Styles
+   ============================================ */
+
+/* Mobile bottom tab bar */
+.mobile-tab-bar {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: linear-gradient(135deg, #0f172a, #1e293b, #78350f);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0;
+    padding-bottom: env(safe-area-inset-bottom, 0.25rem);
+    overflow: hidden;
+}
+
+/* Scrollable container for all tab items */
+.mobile-tab-scroll {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    padding: 0 0.25rem;
+    gap: 0.125rem;
+    align-items: stretch;
+}
+
+.mobile-tab-scroll::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.mobile-tab-scroll .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.55rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    min-width: 3.5rem;
+    max-width: 4.5rem;
+}
+
+.mobile-tab-scroll .tab-item i {
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+}
+
+.mobile-tab-scroll .tab-item span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    line-height: 1.1;
+    font-size: 0.5rem;
+}
+
+.mobile-tab-scroll .tab-item.active {
+    color: #ffffff;
+    background: rgba(59, 130, 246, 0.3);
+}
+
+.mobile-tab-scroll .tab-item.active i {
+    transform: scale(1.1);
+}
+
+.mobile-tab-scroll .tab-item:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.mobile-tab-scroll .tab-item.logout-tab {
+    color: rgba(239, 68, 68, 0.6);
+}
+
+.mobile-tab-scroll .tab-item.logout-tab:hover {
+    color: #ef4444;
+}
+
+/* Gradient fade on edges to indicate scroll */
+.mobile-tab-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 1.5rem;
+    background: linear-gradient(to right, transparent, #0f172a);
+    pointer-events: none;
+}
+
+.mobile-tab-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0.5rem;
+    background: linear-gradient(to left, transparent, #0f172a);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Sidebar overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+}
+
+/* Sidebar scrollbar styling */
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+/* On mobile: sidebar hidden by default */
+@media (max-width: 1023px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar-overlay {
+        display: none;
+    }
+    
+    .sidebar-overlay.show {
+        display: block;
+    }
+
+    /* Show mobile tab bar on small screens */
+    .mobile-tab-bar {
+        display: block;
+    }
+
+    /* Add bottom padding to main content so tab bar doesn't overlap */
+    .has-mobile-tab {
+        padding-bottom: 4.5rem !important;
+    }
+}
+
+/* Responsive tables: horizontal scroll */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive table {
+    min-width: 500px;
+}
+
+/* Card grid improvements */
+.responsive-grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* KPI cards min-width fix */
+.kpi-card {
+    min-width: 0;
+}
+
+/* Modal responsive fix */
+@media (max-width: 639px) {
+    .modal-content {
+        margin: 0.5rem;
+        width: calc(100% - 1rem);
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    
+    .modal-content .grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .header-actions > * {
+        width: 100%;
+    }
+}
+
+/* Pagination responsive */
+@media (max-width: 479px) {
+    .pagination-wrap {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: center;
+    }
+}
+
+/* Stat cards hover fix for touch devices */
+@media (hover: none) {
+    .stat-card:hover {
+        transform: none !important;
+    }
+}
+
+/* Prevent text overflow in cards */
+.card-text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

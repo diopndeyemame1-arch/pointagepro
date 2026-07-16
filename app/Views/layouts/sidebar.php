@@ -5,7 +5,12 @@ if (session_status() === PHP_SESSION_NONE) {
 $role = $_SESSION['role'] ?? '';
 $page = $_GET['page'] ?? '';
 ?>
-<aside class="
+<link rel="stylesheet" href="/COUR-TELLY-TECH/pointagepro/public/assets/css/responsive.css">
+
+<!-- Mobile overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar
 fixed
 top-0
 left-0
@@ -21,7 +26,7 @@ text-white
 shadow-2xl
 z-50
 overflow-y-auto
-">
+" id="mainSidebar">
 
 <!-- ================= LOGO ================= -->
 <div class="p-6 border-b border-white/10 flex-shrink-0">
@@ -126,3 +131,75 @@ foreach($menus as $menu):
 </div>
 
 </aside>
+
+<!-- ================= MOBILE BOTTOM TAB BAR (TOUS LES ITEMS) ================= -->
+<div class="mobile-tab-bar" id="mobileTabBar">
+    <div class="mobile-tab-scroll">
+        <?php if ($role == 'admin'): 
+            $allMenus = [
+                ['page'=>'admin',            'icon'=>'bi-speedometer2',         'name'=>'Tableau de bord'],
+                ['page'=>'presence_admin',   'icon'=>'bi-calendar-check',      'name'=>'Présences'],
+                ['page'=>'absence_admin',    'icon'=>'bi-person-x',            'name'=>'Absences'],
+                ['page'=>'holiday',          'icon'=>'bi-calendar-event',      'name'=>'Jours fériés'],
+                ['page'=>'reports',          'icon'=>'bi-file-earmark-bar-graph', 'name'=>'Rapports'],
+                ['page'=>'audit_logs',       'icon'=>'bi-shield-lock',         'name'=>'Audit Logs'],
+                ['page'=>'qr_code',          'icon'=>'bi-qr-code-scan',        'name'=>'QR Code'],
+                ['page'=>'departments',      'icon'=>'bi-diagram-3-fill',      'name'=>'Départements'],
+                ['page'=>'users',            'icon'=>'bi-people-fill',         'name'=>'Utilisateurs'],
+                ['page'=>'settings',         'icon'=>'bi-gear-fill',           'name'=>'Paramètres'],
+                ['page'=>'logout',           'icon'=>'bi-box-arrow-right',     'name'=>'Déconnexion', 'logout'=>true]
+            ];
+        elseif ($role == 'etudiant'):
+            $allMenus = [
+                ['page'=>'etudiant',   'icon'=>'bi-speedometer2',    'name'=>'Dashboard'],
+                ['page'=>'presence',   'icon'=>'bi-calendar-check',  'name'=>'Présences'],
+                ['page'=>'absence',    'icon'=>'bi-person-x',        'name'=>'Absences'],
+                ['page'=>'holiday',    'icon'=>'bi-calendar-event',  'name'=>'Jours fériés'],
+                ['page'=>'qr_code_etu','icon'=>'bi-qr-code-scan',    'name'=>'QR Code'],
+                ['page'=>'profil',     'icon'=>'bi-person-circle',   'name'=>'Profil'],
+                ['page'=>'logout',     'icon'=>'bi-box-arrow-right', 'name'=>'Déconnexion', 'logout'=>true]
+            ];
+        else:
+            $allMenus = [];
+        endif; ?>
+
+        <?php foreach ($allMenus as $tab):
+            $active = ($page == $tab['page']);
+            $isLogout = !empty($tab['logout']);
+        ?>
+            <?php if ($isLogout): ?>
+                <a href="index.php?page=logout" class="tab-item logout-tab">
+                    <i class="bi <?= $tab['icon'] ?>"></i>
+                    <span><?= $tab['name'] ?></span>
+                </a>
+            <?php else: ?>
+                <a href="index.php?page=<?= $tab['page'] ?>"
+                   class="tab-item <?= $active ? 'active' : '' ?>">
+                    <i class="bi <?= $tab['icon'] ?>"></i>
+                    <span><?= $tab['name'] ?></span>
+                </a>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </div>
+</div>
+
+<script>
+// Add has-mobile-tab class to main content on mobile
+function addMobileTabPadding() {
+    const mainElements = document.querySelectorAll('main');
+    if (window.innerWidth < 1024) {
+        mainElements.forEach(function(el) {
+            el.classList.add('has-mobile-tab');
+        });
+    } else {
+        mainElements.forEach(function(el) {
+            el.classList.remove('has-mobile-tab');
+        });
+    }
+}
+
+window.addEventListener('resize', addMobileTabPadding);
+document.addEventListener('DOMContentLoaded', function() {
+    addMobileTabPadding();
+});
+</script>

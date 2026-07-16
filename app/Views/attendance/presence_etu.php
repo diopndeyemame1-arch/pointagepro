@@ -362,7 +362,7 @@ Suivi détaillé de vos pointages
 
 
 
-<div class=" overflow-x-auto">
+<div class="table-responsive">
 <table class="w-full">
 <thead class="bg-gradient-to-r from-blue-900 to-amber-700 text-white">
 <tr>
