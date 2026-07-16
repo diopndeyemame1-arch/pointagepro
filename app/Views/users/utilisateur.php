@@ -165,7 +165,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <!-- Formulaire -->
-        <form method="POST" action="index.php?page=store_user" enctype="multipart/form-data">
+        <form method="POST" action="index.php?page=store_user" enctype="multipart/form-data" onsubmit="const btn=this.querySelector('button[type=submit]'); btn.disabled=true; btn.classList.add('opacity-50', 'cursor-not-allowed'); btn.innerHTML='<i class=\'bi bi-arrow-repeat animate-spin mr-2\'></i> Enregistrement...';">
 
             <div class="grid md:grid-cols-2 gap-4">
 
@@ -194,7 +194,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </label>
                     <input type="email"  name="email"
                            class="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 outline-none"
-                           placeholder="fatou@gmail.com">
+                           placeholder="fatou@gmail.com" required>
                 </div>
 
                 <!-- Téléphone -->
@@ -212,14 +212,14 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <label class="font-medium flex items-center gap-2 mb-2">
                         <i class="bi bi-person-badge"></i> Rôle
                     </label>
-                    <select class="w-full border rounded-xl px-4 py-3"  name="role">
+                    <select class="w-full border rounded-xl px-4 py-3" name="role" id="create_role" onchange="toggleCohortDeptFields(this.value, 'create')">
                         <option value="etudiant">Étudiant</option>
                         <option value="admin">Admin</option>
                     </select>
                 </div>
 
                <!-- Département -->
-                <div>
+                <div id="create_dept_group">
                     <label class="font-medium flex items-center gap-2 mb-2">
                         <i class="bi bi-building"></i> Département
                     </label>
@@ -236,7 +236,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 
                 <!-- Cohorte -->
-                <div>
+                <div id="create_cohort_group">
                     <label class="font-medium flex items-center gap-2 mb-2">
                         <i class="bi bi-people-fill"></i> Cohorte
                     </label>
@@ -359,9 +359,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     $photoUrl = null;
                                     if (!empty($user['photo'])) {
                                         // La BDD stocke déjà "uploads/nom_fichier"
-                                        $photoPath = $_SERVER['DOCUMENT_ROOT'] . "/COUR-TELLY-TECH/pointagepro/public/" . $user['photo'];
+                                        $photoPath = $_SERVER['DOCUMENT_ROOT'] . "/" . $user['photo'];
                                         if (file_exists($photoPath)) {
-                                            $photoUrl = "/COUR-TELLY-TECH/pointagepro/public/" . $user['photo'];
+                                            $photoUrl = "/" . $user['photo'];
                                         }
                                     }
                                     ?>
@@ -420,6 +420,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         document.getElementById('edit_department').value = '<?= $user['department_id'] ?? '' ?>';
                                         document.getElementById('edit_cohort').value = '<?= $user['cohort_id'] ?? '' ?>';
                                         document.getElementById('edit_role').value='<?= htmlspecialchars($user['role'] ?? '') ?>';
+                                        toggleCohortDeptFields('<?= htmlspecialchars($user['role'] ?? '') ?>', 'edit');
                                     "
                                     class="bg-blue-100 text-blue-600 px-3 py-2 rounded-2xl hover:bg-blue-200 transition">
                                     <i class="bi bi-pencil-square"></i>
@@ -431,6 +432,15 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                    class="<?= $isActive ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-green-100 text-green-600 hover:bg-green-200' ?> px-3 py-2 rounded-2xl transition">
                                     <i class="bi <?= $isActive ? 'bi-person-x-fill' : 'bi-person-check-fill' ?>"></i>
                                 </a>
+
+                                <?php if (($user['id'] ?? '') !== ($_SESSION['user_id'] ?? '')): ?>
+                                    <a href="index.php?page=delete_user&id=<?= $user['id'] ?? '' ?>"
+                                       onclick="return confirm('Voulez-vous vraiment supprimer définitivement cet utilisateur ?')"
+                                       title="Supprimer l'utilisateur"
+                                       class="bg-red-100 text-red-600 hover:bg-red-200 px-3 py-2 rounded-2xl transition">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -467,7 +477,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </button>
         </div>
 
-      <form action="index.php?page=update_user" method="POST">
+      <form action="index.php?page=update_user" method="POST" onsubmit="const btn=this.querySelector('button[type=submit]'); btn.disabled=true; btn.classList.add('opacity-50', 'cursor-not-allowed'); btn.innerHTML='<i class=\'bi bi-arrow-repeat animate-spin mr-2\'></i> Enregistrement...';">
 
             <input type="hidden" name="id" id="edit_id">
 
@@ -497,7 +507,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         type="email"
                         id="edit_email"
                         name="email"
-                        class="w-full border rounded-xl p-3">
+                        class="w-full border rounded-xl p-3" required>
                 </div>
 
                 <div>
@@ -509,7 +519,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         class="w-full border rounded-xl p-3">
                 </div>
 
-                <div>
+                <div id="edit_dept_group">
                     <label>Département</label>
                     <select id="edit_department" name="department_id" class="w-full border rounded-xl p-3">
                         <?php foreach ($departments as $dep): ?>
@@ -520,7 +530,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </select>
                 </div>
 
-                <div>
+                <div id="edit_cohort_group">
                     <label>Cohorte</label>
                     <select id="edit_cohort" name="cohort_id" class="w-full border rounded-xl p-3">
                         <?php foreach ($cohorts as $coh): ?>
@@ -537,7 +547,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <select
                         id="edit_role"
                         name="role"
-                        class="w-full border rounded-xl p-3">
+                        class="w-full border rounded-xl p-3"
+                        onchange="toggleCohortDeptFields(this.value, 'edit')">
 
                         <option value="etudiant">Étudiant</option>
                         <option value="admin">Admin</option>
@@ -591,7 +602,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <form action="index.php?page=import_users"
               method="POST"
               enctype="multipart/form-data"
-              class="mt-6">
+              class="mt-6"
+              onsubmit="const btn=this.querySelector('button[type=submit]'); btn.disabled=true; btn.classList.add('opacity-50', 'cursor-not-allowed'); btn.innerHTML='<i class=\'bi bi-arrow-repeat animate-spin mr-2\'></i> Importation...';">
 
             <label class="block mb-2 font-medium">
                 Fichier CSV
@@ -626,6 +638,30 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
 </div>
+
+<script>
+function toggleCohortDeptFields(role, prefix) {
+    const deptGroup = document.getElementById(prefix + '_dept_group');
+    const cohortGroup = document.getElementById(prefix + '_cohort_group');
+    if (deptGroup && cohortGroup) {
+        if (role === 'admin') {
+            deptGroup.classList.add('hidden');
+            cohortGroup.classList.add('hidden');
+        } else {
+            deptGroup.classList.remove('hidden');
+            cohortGroup.classList.remove('hidden');
+        }
+    }
+}
+
+// Initialiser à l'ouverture de la page pour le formulaire d'ajout
+document.addEventListener('DOMContentLoaded', function() {
+    const createRoleSelect = document.getElementById('create_role');
+    if (createRoleSelect) {
+        toggleCohortDeptFields(createRoleSelect.value, 'create');
+    }
+});
+</script>
 </body>
 </html>
 

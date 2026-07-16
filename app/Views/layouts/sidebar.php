@@ -102,9 +102,9 @@ foreach($menus as $menu):
     $photoName = $admin['photo'] ?? '';
     $avatarUrl = 'https://ui-avatars.com/api/?name=' . urlencode($admin['name']) . '&background=B8863A&color=fff&size=96';
     if (!empty($photoName)) {
-        $fullPath = $_SERVER['DOCUMENT_ROOT'] . '/COUR-TELLY-TECH/pointagepro/public/' . $photoName;
+        $fullPath = $_SERVER['DOCUMENT_ROOT'] . '/' . $photoName;
         if (file_exists($fullPath)) {
-            $avatarUrl = '/COUR-TELLY-TECH/pointagepro/public/' . $photoName;
+            $avatarUrl = '/' . $photoName;
         }
     }
 ?>

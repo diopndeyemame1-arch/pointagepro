@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
     // Vérification du mot de passe
-    if (!password_verify($password, $user['password_hash'])) {
+    if (!password_verify($password, $user['password_hash'] ?? '')) {
 
         $_SESSION['error'] = "Email ou mot de passe incorrect.";
         header("Location: index.php?page=login");
