@@ -31,8 +31,8 @@ try {
     $mail->SMTPAuth = true;
     $mail->Username = 'diopndeyemame1@gmail.com';
     $mail->Password = 'oojo gbdu juup dfsq';
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port = 587;
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Utiliser SSL
+    $mail->Port = 465; // Port sécurisé 465
     $mail->Timeout = 10;
 
     $mail->setFrom('diopndeyemame1@gmail.com', 'PointagePro');
