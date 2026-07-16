@@ -212,14 +212,14 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <label class="font-medium flex items-center gap-2 mb-2">
                         <i class="bi bi-person-badge"></i> Rôle
                     </label>
-                    <select class="w-full border rounded-xl px-4 py-3"  name="role">
+                    <select class="w-full border rounded-xl px-4 py-3" name="role" id="create_role" onchange="toggleCohortDeptFields(this.value, 'create')">
                         <option value="etudiant">Étudiant</option>
                         <option value="admin">Admin</option>
                     </select>
                 </div>
 
                <!-- Département -->
-                <div>
+                <div id="create_dept_group">
                     <label class="font-medium flex items-center gap-2 mb-2">
                         <i class="bi bi-building"></i> Département
                     </label>
@@ -236,7 +236,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 
                 <!-- Cohorte -->
-                <div>
+                <div id="create_cohort_group">
                     <label class="font-medium flex items-center gap-2 mb-2">
                         <i class="bi bi-people-fill"></i> Cohorte
                     </label>
@@ -420,6 +420,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         document.getElementById('edit_department').value = '<?= $user['department_id'] ?? '' ?>';
                                         document.getElementById('edit_cohort').value = '<?= $user['cohort_id'] ?? '' ?>';
                                         document.getElementById('edit_role').value='<?= htmlspecialchars($user['role'] ?? '') ?>';
+                                        toggleCohortDeptFields('<?= htmlspecialchars($user['role'] ?? '') ?>', 'edit');
                                     "
                                     class="bg-blue-100 text-blue-600 px-3 py-2 rounded-2xl hover:bg-blue-200 transition">
                                     <i class="bi bi-pencil-square"></i>
@@ -509,7 +510,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         class="w-full border rounded-xl p-3">
                 </div>
 
-                <div>
+                <div id="edit_dept_group">
                     <label>Département</label>
                     <select id="edit_department" name="department_id" class="w-full border rounded-xl p-3">
                         <?php foreach ($departments as $dep): ?>
@@ -520,7 +521,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </select>
                 </div>
 
-                <div>
+                <div id="edit_cohort_group">
                     <label>Cohorte</label>
                     <select id="edit_cohort" name="cohort_id" class="w-full border rounded-xl p-3">
                         <?php foreach ($cohorts as $coh): ?>
@@ -537,7 +538,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <select
                         id="edit_role"
                         name="role"
-                        class="w-full border rounded-xl p-3">
+                        class="w-full border rounded-xl p-3"
+                        onchange="toggleCohortDeptFields(this.value, 'edit')">
 
                         <option value="etudiant">Étudiant</option>
                         <option value="admin">Admin</option>
@@ -627,6 +629,30 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
 </div>
+
+<script>
+function toggleCohortDeptFields(role, prefix) {
+    const deptGroup = document.getElementById(prefix + '_dept_group');
+    const cohortGroup = document.getElementById(prefix + '_cohort_group');
+    if (deptGroup && cohortGroup) {
+        if (role === 'admin') {
+            deptGroup.classList.add('hidden');
+            cohortGroup.classList.add('hidden');
+        } else {
+            deptGroup.classList.remove('hidden');
+            cohortGroup.classList.remove('hidden');
+        }
+    }
+}
+
+// Initialiser à l'ouverture de la page pour le formulaire d'ajout
+document.addEventListener('DOMContentLoaded', function() {
+    const createRoleSelect = document.getElementById('create_role');
+    if (createRoleSelect) {
+        toggleCohortDeptFields(createRoleSelect.value, 'create');
+    }
+});
+</script>
 </body>
 </html>
 
