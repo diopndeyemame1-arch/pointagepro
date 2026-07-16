@@ -28,6 +28,7 @@ function sendActivationMail($email, $fullname, $token)
         $mail->Password = 'oojo gbdu juup dfsq';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
+        $mail->Timeout = 10; // Timeout de 10 secondes maximum
 
         $mail->setFrom('diopndeyemame1@gmail.com', 'PointagePro');
         $mail->addAddress($email, $fullname);
@@ -315,6 +316,7 @@ function sendPasswordResetMail($email, $fullname, $token)
         $mail->Password = 'oojo gbdu juup dfsq';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
+        $mail->Timeout = 10; // Timeout de 10 secondes maximum
 
         $mail->setFrom('diopndeyemame1@gmail.com', 'PointagePro');
         $mail->addAddress($email, $fullname);
@@ -404,6 +406,7 @@ function sendAbsenceNotificationMail($email, $fullname, $subject, $title, $messa
         $mail->Password = 'oojo gbdu juup dfsq';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
+        $mail->Timeout = 10; // Timeout de 10 secondes maximum
         $mail->CharSet = 'UTF-8';
 
         $mail->setFrom('diopndeyemame1@gmail.com', 'PointagePro');

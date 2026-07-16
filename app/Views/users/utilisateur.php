@@ -165,7 +165,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <!-- Formulaire -->
-        <form method="POST" action="index.php?page=store_user" enctype="multipart/form-data">
+        <form method="POST" action="index.php?page=store_user" enctype="multipart/form-data" onsubmit="const btn=this.querySelector('button[type=submit]'); btn.disabled=true; btn.classList.add('opacity-50', 'cursor-not-allowed'); btn.innerHTML='<i class=\'bi bi-arrow-repeat animate-spin mr-2\'></i> Enregistrement...';">
 
             <div class="grid md:grid-cols-2 gap-4">
 
@@ -467,7 +467,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </button>
         </div>
 
-      <form action="index.php?page=update_user" method="POST">
+      <form action="index.php?page=update_user" method="POST" onsubmit="const btn=this.querySelector('button[type=submit]'); btn.disabled=true; btn.classList.add('opacity-50', 'cursor-not-allowed'); btn.innerHTML='<i class=\'bi bi-arrow-repeat animate-spin mr-2\'></i> Enregistrement...';">
 
             <input type="hidden" name="id" id="edit_id">
 
@@ -591,7 +591,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <form action="index.php?page=import_users"
               method="POST"
               enctype="multipart/form-data"
-              class="mt-6">
+              class="mt-6"
+              onsubmit="const btn=this.querySelector('button[type=submit]'); btn.disabled=true; btn.classList.add('opacity-50', 'cursor-not-allowed'); btn.innerHTML='<i class=\'bi bi-arrow-repeat animate-spin mr-2\'></i> Importation...';">
 
             <label class="block mb-2 font-medium">
                 Fichier CSV
