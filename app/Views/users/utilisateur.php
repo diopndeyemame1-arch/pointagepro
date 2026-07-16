@@ -432,6 +432,15 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                    class="<?= $isActive ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-green-100 text-green-600 hover:bg-green-200' ?> px-3 py-2 rounded-2xl transition">
                                     <i class="bi <?= $isActive ? 'bi-person-x-fill' : 'bi-person-check-fill' ?>"></i>
                                 </a>
+
+                                <?php if (($user['id'] ?? '') !== ($_SESSION['user_id'] ?? '')): ?>
+                                    <a href="index.php?page=delete_user&id=<?= $user['id'] ?? '' ?>"
+                                       onclick="return confirm('Voulez-vous vraiment supprimer définitivement cet utilisateur ?')"
+                                       title="Supprimer l'utilisateur"
+                                       class="bg-red-100 text-red-600 hover:bg-red-200 px-3 py-2 rounded-2xl transition">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
