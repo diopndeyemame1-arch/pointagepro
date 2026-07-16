@@ -194,7 +194,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </label>
                     <input type="email"  name="email"
                            class="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 outline-none"
-                           placeholder="fatou@gmail.com">
+                           placeholder="fatou@gmail.com" required>
                 </div>
 
                 <!-- Téléphone -->
@@ -507,7 +507,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         type="email"
                         id="edit_email"
                         name="email"
-                        class="w-full border rounded-xl p-3">
+                        class="w-full border rounded-xl p-3" required>
                 </div>
 
                 <div>
