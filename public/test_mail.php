@@ -27,7 +27,7 @@ try {
     ];
 
     $mail->isSMTP();
-    $mail->Host = gethostbyname('smtp.gmail.com');
+    $mail->Host = 'smtp.gmail.com'; // Utiliser le domaine pour permettre le fallback automatique de PHPMailer
     $mail->SMTPAuth = true;
     $mail->Username = 'diopndeyemame1@gmail.com';
     $mail->Password = 'oojo gbdu juup dfsq';
