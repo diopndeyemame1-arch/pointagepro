@@ -97,12 +97,7 @@ public function delete($id = null)
 {
     $id = $id ?? ($_GET['id'] ?? null);
 
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-    $currentUserId = $_SESSION['user_id'] ?? null;
-
-    if ($id && $id !== $currentUserId) {
+    if ($id) {
         $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = ?");
         $stmt->execute([$id]);
         addAudit($this->pdo, 'DELETE', 'users', $id);
