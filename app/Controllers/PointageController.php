@@ -67,7 +67,7 @@ class PointageController
             $distance = $this->haversine((float)$schoolLat, (float)$schoolLng, (float)$lat, (float)$lng);
 
             if ($distance > $radius) {
-                $_SESSION['attendance_error'] = 'Vous êtes trop loin de l\'école (' . round($distance) . ' m). Rayon autorisé: ' . $radius . ' m.';
+                $_SESSION['attendance_error'] = 'Vous êtes trop loin de l école (' . round($distance) . ' m). Rayon autorisé: ' . $radius . ' m.';
                 header('Location: index.php?page=presence');
                 exit;
             }
@@ -77,7 +77,7 @@ class PointageController
         $result = $attCtrl->pointerEntree($user_id);
 
         if ($result === 'déjà_pointé') {
-            $_SESSION['attendance_error'] = 'Vous avez déjà pointé l\'entrée aujourd\'hui.';
+            $_SESSION['attendance_error'] = 'Vous avez déjà pointé l entrée aujourd hui.';
         } else {
             $_SESSION['attendance_success'] = 'Entrée enregistrée.';
         }
