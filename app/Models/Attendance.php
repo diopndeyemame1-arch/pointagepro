@@ -164,4 +164,85 @@ class Attendance
 
         return $stmt->execute([$time, $userId, $date]);
     }
+
+    /**
+     * Count the number of absences (scheduled days without attendance) for a student in the current month.
+     */
+    public function countAbsencesThisMonth($userId)
+    {
+        $dayName = date('l');
+        $daysMap = [
+            'Monday' => 'Lundi', 'Tuesday' => 'Mardi', 'Wednesday' => 'Mercredi',
+            'Thursday' => 'Jeudi', 'Friday' => 'Vendredi', 'Saturday' => 'Samedi', 'Sunday' => 'Dimanche'
+        ];
+
+        $firstDay = date('Y-m-01');
+        $lastDay = date('Y-m-t');
+
+        $sql = "
+            WITH scheduled_days AS (
+                SELECT DISTINCT cs.day AS day_name
+                FROM cohort_schedules cs
+                JOIN users u ON u.cohort_id = cs.cohort_id
+                WHERE u.id = ?
+            ),
+            all_dates_in_month AS (
+                SELECT generate_series(
+                    ?::date,
+                    ?::date,
+                    '1 day'::interval
+                )::date AS date
+            ),
+            month_dates_with_dayname AS (
+                SELECT 
+                    d.date,
+                    CASE 
+                        WHEN EXTRACT(DOW FROM d.date) = 0 THEN 'Dimanche'
+                        WHEN EXTRACT(DOW FROM d.date) = 1 THEN 'Lundi'
+                        WHEN EXTRACT(DOW FROM d.date) = 2 THEN 'Mardi'
+                        WHEN EXTRACT(DOW FROM d.date) = 3 THEN 'Mercredi'
+                        WHEN EXTRACT(DOW FROM d.date) = 4 THEN 'Jeudi'
+                        WHEN EXTRACT(DOW FROM d.date) = 5 THEN 'Vendredi'
+                        WHEN EXTRACT(DOW FROM d.date) = 6 THEN 'Samedi'
+                    END AS day_name
+                FROM all_dates_in_month d
+            )
+            SELECT COUNT(*) AS absence_count
+            FROM month_dates_with_dayname m
+            JOIN scheduled_days s ON s.day_name = m.day_name
+            WHERE m.date <= CURRENT_DATE
+              AND NOT EXISTS (
+                  SELECT 1 FROM attendances a
+                  WHERE a.user_id = ?
+                    AND a.date = m.date
+              )
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$userId, $firstDay, $lastDay, $userId]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * Mark that the absence warning has been sent for a student.
+     */
+    public function markAbsenceWarningSent($userId)
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE users SET absence_warning_sent = true WHERE id = ?
+        ");
+        return $stmt->execute([$userId]);
+    }
+
+    /**
+     * Check if the absence warning has already been sent for a student.
+     */
+    public function hasAbsenceWarningBeenSent($userId)
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT absence_warning_sent FROM users WHERE id = ?
+        ");
+        $stmt->execute([$userId]);
+        return (bool) $stmt->fetchColumn();
+    }
 }

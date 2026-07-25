@@ -126,6 +126,34 @@ Consultez votre historique de présence et effectuez votre pointage.
     <?php unset($_SESSION['attendance_success']); ?>
 <?php endif; ?>
 
+<?php
+// Calcul du nombre d'absences pour l'alerte
+$absenceModel = new Attendance($pdo);
+$currentMonthAbsences = $absenceModel->countAbsencesThisMonth($userId);
+$warningAlreadySent = $absenceModel->hasAbsenceWarningBeenSent($userId);
+?>
+
+<?php if ($currentMonthAbsences >= 3): ?>
+    <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                <i class="bi bi-exclamation-triangle-fill text-red-600 text-xl"></i>
+            </div>
+            <div>
+                <h4 class="font-bold text-red-800 text-lg">Alerte absences</h4>
+                <p class="text-red-700 mt-1">
+                    Vous avez <strong><?= $currentMonthAbsences ?> absences</strong> non justifiées ce mois-ci.
+                    <?php if ($warningAlreadySent): ?>
+                        Un email d'avertissement vous a été envoyé. Veuillez justifier vos absences rapidement.
+                    <?php else: ?>
+                        Veuillez justifier vos absences auprès de l'administration.
+                    <?php endif; ?>
+                </p>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
 <!-- ================= KPI ================= -->
 
 

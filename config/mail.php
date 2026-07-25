@@ -188,6 +188,79 @@ function sendPasswordResetMail($email, $fullname, $token)
     return sendBrevoEmail($email, $fullname, $subject, $body, $altBody);
 }
 
+function sendAbsenceWarningMail($email, $fullname, $absenceCount)
+{
+    $safeName = htmlspecialchars($fullname, ENT_QUOTES, 'UTF-8');
+    $subject = "Absences répétées - Action requise";
+    $title = "Vous avez {$absenceCount} absences non justifiées";
+
+    $body = '<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+</head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellspacing="0" cellpadding="0" style="background:#f3f4f6;padding:40px 0;">
+<tr>
+<td align="center">
+<table width="650" cellpadding="0" cellspacing="0" style="background:white;border-radius:20px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.08);">
+<tr>
+<td style="background:#b91c1c;padding:30px;">
+<table width="100%">
+<tr>
+<td>
+<h2 style="margin:0;color:white;font-size:30px;">PointagePro</h2>
+<p style="margin:5px 0 0;color:#fca5a5;">Gestion des présences</p>
+</td>
+<td align="right">
+<span style="background:#7f1d1d;padding:10px 18px;border-radius:30px;color:white;font-weight:bold;font-size:13px;">TELLYTECH</span>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="padding:45px;">
+<h1 style="margin-top:0;font-size:28px;color:#111827;">Bonjour '.$safeName.' 👋</h1>
+<p style="font-size:17px;color:#555;line-height:30px;">Vous avez accumulé <strong style="color:#b91c1c;">'.$absenceCount.' absences</strong> non justifiées ce mois-ci.</p>
+<table width="100%" cellpadding="15" style="margin-top:30px;background:#fef2f2;border:1px solid #fecaca;border-radius:15px;">
+<tr>
+<td style="color:#991b1b;">
+<strong>⚠️ Rappel important</strong>
+<p style="margin:10px 0 0;font-size:15px;line-height:25px;color:#7f1d1d;">
+Conformément au règlement intérieur, nous vous rappelons que toute absence doit être justifiée sous 48 heures.
+Merci de fournir un justificatif (certificat médical, autorisation parentale, etc.) au service administratif ou via votre espace étudiant.
+</p>
+</td>
+</tr>
+</table>
+<table width="100%" style="margin-top:30px;">
+<tr>
+<td style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:20px;">
+<p style="margin:0;font-size:14px;color:#374151;"><strong>Nombre d\'absences :</strong> '.$absenceCount.'</p>
+<p style="margin:10px 0 0;font-size:14px;color:#374151;"><strong>Période :</strong> '.date('F Y').'</p>
+</td>
+</tr>
+</table>
+<hr style="margin:40px 0;border:none;border-top:1px solid #e5e7eb;">
+<p style="font-size:13px;color:#999;">Ce message est automatique, merci de ne pas y répondre.</p>
+</td>
+</tr>
+<tr>
+<td align="center" style="background:#f8fafc;padding:25px;font-size:12px;color:#999;">© '.date('Y').' PointagePro - TELLYTECH</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>';
+
+    $altBody = "Bonjour {$fullname},\n\nVous avez {$absenceCount} absences non justifiées ce mois-ci.\n\nMerci de justifier vos absences auprès de l'administration.\n\nCordialement,\nPointagePro";
+
+    return sendBrevoEmail($email, $fullname, $subject, $body, $altBody);
+}
+
 function sendAbsenceNotificationMail($email, $fullname, $subject, $title, $message, array $absence = [])
 {
     $safeName = htmlspecialchars($fullname, ENT_QUOTES, 'UTF-8');

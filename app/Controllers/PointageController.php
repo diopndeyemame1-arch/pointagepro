@@ -80,6 +80,14 @@ class PointageController
             $_SESSION['attendance_error'] = 'Vous avez déjà pointé l entrée aujourd hui.';
         } else {
             $_SESSION['attendance_success'] = 'Entrée enregistrée.';
+
+            // Après un pointage réussi, vérifier le nombre d'absences
+            require_once __DIR__ . '/../config/mail.php';
+
+            $absenceCount = $this->checkAndWarnAbsences($user_id);
+            if ($absenceCount > 0) {
+                $_SESSION['attendance_absence_warning'] = $absenceCount;
+            }
         }
 
         header('Location: index.php?page=presence');
@@ -139,5 +147,46 @@ class PointageController
 
         header('Location: index.php?page=presence');
         exit;
+    }
+
+    /**
+     * Vérifie le nombre d'absences de l'étudiant.
+     * Si >= 3 absences et que l'avertissement n'a pas encore été envoyé,
+     * envoie un email de notification.
+     *
+     * @param string $userId
+     * @return int Nombre d'absences constatées
+     */
+    private function checkAndWarnAbsences($userId)
+    {
+        require_once __DIR__ . '/../Models/Attendance.php';
+
+        $attendanceModel = new Attendance($this->pdo);
+
+        $absenceCount = $attendanceModel->countAbsencesThisMonth($userId);
+
+        // Si l'étudiant a 3 absences ou plus et n'a pas encore été averti
+        if ($absenceCount >= 3 && !$attendanceModel->hasAbsenceWarningBeenSent($userId)) {
+            // Récupérer les infos de l'étudiant
+            $stmt = $this->pdo->prepare("
+                SELECT firstname, lastname, email
+                FROM users
+                WHERE id = ?
+            ");
+            $stmt->execute([$userId]);
+            $student = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($student && !empty($student['email'])) {
+                $fullname = trim(($student['firstname'] ?? '') . ' ' . ($student['lastname'] ?? ''));
+                $emailSent = sendAbsenceWarningMail($student['email'], $fullname, $absenceCount);
+
+                if ($emailSent) {
+                    $attendanceModel->markAbsenceWarningSent($userId);
+                    error_log("Avertissement d'absence envoyé à {$student['email']} ({$absenceCount} absences)");
+                }
+            }
+        }
+
+        return $absenceCount;
     }
 }
