@@ -78,6 +78,7 @@ $menus = [
     ['page'=>'etudiant',   'icon'=>'bi-speedometer2',    'name'=>'Tableau de bord'],
     ['page'=>'presence',   'icon'=>'bi-calendar-check',  'name'=>'Mes Présences'],
     ['page'=>'absence',    'icon'=>'bi-person-x',        'name'=>'Mes Absences'],
+    ['page'=>'emploi_temps','icon'=>'bi-calendar3-week', 'name'=>'Emploi du temps'],
     ['page'=>'holiday',    'icon'=>'bi-calendar-event',  'name'=>'Jours fériés'],
     ['page'=>'qr_code_etu','icon'=>'bi-qr-code-scan',    'name'=>'Mon QR Code'],
     ['page'=>'profil',     'icon'=>'bi-person-circle',   'name'=>'Mon Profil']
@@ -154,6 +155,7 @@ foreach($menus as $menu):
                 ['page'=>'etudiant',   'icon'=>'bi-speedometer2',    'name'=>'Dashboard'],
                 ['page'=>'presence',   'icon'=>'bi-calendar-check',  'name'=>'Présences'],
                 ['page'=>'absence',    'icon'=>'bi-person-x',        'name'=>'Absences'],
+                ['page'=>'emploi_temps',    'icon'=>'bi-calendar3-week',     'name'=>'Emploi du temps'],
                 ['page'=>'holiday',    'icon'=>'bi-calendar-event',  'name'=>'Jours fériés'],
                 ['page'=>'qr_code_etu','icon'=>'bi-qr-code-scan',    'name'=>'QR Code'],
                 ['page'=>'profil',     'icon'=>'bi-person-circle',   'name'=>'Profil'],

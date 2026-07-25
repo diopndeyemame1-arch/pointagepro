@@ -11,6 +11,14 @@ class Attendance
 
     public function getAttendanceToday($date, $limit = 10, $offset = 0)
 {
+    // Récupérer le nom du jour actuel (Lundi, Mardi, etc.)
+    $dayName = date('l', strtotime($date));
+    $daysMap = [
+        'Monday' => 'Lundi', 'Tuesday' => 'Mardi', 'Wednesday' => 'Mercredi',
+        'Thursday' => 'Jeudi', 'Friday' => 'Vendredi', 'Saturday' => 'Samedi', 'Sunday' => 'Dimanche'
+    ];
+    $todayDayName = $daysMap[$dayName] ?? '';
+
     $sql = "
     SELECT 
         u.id,
@@ -38,6 +46,10 @@ class Attendance
     LEFT JOIN attendances a
         ON u.id = a.user_id AND a.date = ?
 
+    INNER JOIN cohort_schedules cs
+        ON cs.cohort_id = u.cohort_id
+        AND LOWER(cs.day) = LOWER(?)
+
     WHERE u.role = 'etudiant'
 
     ORDER BY u.firstname ASC
@@ -45,7 +57,7 @@ class Attendance
     ";
 
     $stmt = $this->pdo->prepare($sql);
-    $stmt->execute([$date, $limit, $offset]);
+    $stmt->execute([$date, $todayDayName, $limit, $offset]);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -74,11 +86,24 @@ class Attendance
 
     public function countStudents()
     {
-        return $this->pdo->query("
-            SELECT COUNT(*) 
-            FROM users 
-            WHERE role = 'etudiant'
-        ")->fetchColumn();
+        // Compter uniquement les étudiants qui ont cours aujourd'hui
+        $dayName = date('l');
+        $daysMap = [
+            'Monday' => 'Lundi', 'Tuesday' => 'Mardi', 'Wednesday' => 'Mercredi',
+            'Thursday' => 'Jeudi', 'Friday' => 'Vendredi', 'Saturday' => 'Samedi', 'Sunday' => 'Dimanche'
+        ];
+        $todayDayName = $daysMap[$dayName] ?? '';
+
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(DISTINCT u.id)
+            FROM users u
+            INNER JOIN cohort_schedules cs
+                ON cs.cohort_id = u.cohort_id
+                AND LOWER(cs.day) = LOWER(?)
+            WHERE u.role = 'etudiant'
+        ");
+        $stmt->execute([$todayDayName]);
+        return $stmt->fetchColumn();
     }
 
   

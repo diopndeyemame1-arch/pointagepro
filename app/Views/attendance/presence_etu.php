@@ -16,6 +16,31 @@ $schoolLatPHP = $schoolSettings['school_lat'] ?? '14.721725593495935';
 $schoolLngPHP = $schoolSettings['school_lng'] ?? '-17.463747100271004';
 $schoolRadiusPHP = (int)($schoolSettings['radius'] ?? 0);
 
+// Vérifier si aujourd'hui est un jour férié
+$todayDate = date('Y-m-d');
+$holidayStmt = $pdo->prepare("SELECT holiday_name FROM public_holidays WHERE holiday_date = :date LIMIT 1");
+$holidayStmt->execute([':date' => $todayDate]);
+$todayHoliday = $holidayStmt->fetch(PDO::FETCH_ASSOC);
+$isHolidayToday = !empty($todayHoliday);
+$holidayName = $todayHoliday['holiday_name'] ?? '';
+
+// Vérifier si aujourd'hui est un jour de cours pour l'étudiant
+$daysOfWeek = [1 => 'Lundi', 2 => 'Mardi', 3 => 'Mercredi', 4 => 'Jeudi', 5 => 'Vendredi', 6 => 'Samedi', 7 => 'Dimanche'];
+$todayDayNumber = (int)date('N');
+$todayDayName = $daysOfWeek[$todayDayNumber] ?? '';
+
+$hasCourseToday = false;
+$studentCohortId = null;
+$cohortStmt = $pdo->prepare("SELECT cohort_id FROM users WHERE id = :id AND role = 'etudiant' LIMIT 1");
+$cohortStmt->execute([':id' => $userId]);
+$studentCohortId = $cohortStmt->fetchColumn();
+
+if ($studentCohortId && $todayDayName) {
+    $scheduleCheck = $pdo->prepare("SELECT 1 FROM cohort_schedules WHERE cohort_id = :cohort_id AND LOWER(day) = LOWER(:day) LIMIT 1");
+    $scheduleCheck->execute([':cohort_id' => $studentCohortId, ':day' => $todayDayName]);
+    $hasCourseToday = (bool)$scheduleCheck->fetchColumn();
+}
+
 $history = $model->getStudentHistory($userId);
 
 $total = count($history);
@@ -265,6 +290,8 @@ Performance globale
 
 
 
+
+
 <!-- ================= HISTORIQUE ================= -->
 
 
@@ -308,7 +335,7 @@ Suivi détaillé de vos pointages
 <div class="flex flex-wrap gap-3">
 
 
-<form id="entryForm" method="POST" action="index.php?page=pointage_entree" onsubmit="return submitWithGeo(this,event)">
+<form id="entryForm" method="POST" action="index.php?page=pointage_entree" onsubmit="return handlePointageSubmit(this,event,'Entrée')">
     <input type="hidden" name="lat" />
     <input type="hidden" name="lng" />
 
@@ -331,7 +358,7 @@ Suivi détaillé de vos pointages
 
 
 
-<form id="exitForm" method="POST" action="index.php?page=pointage_sortie" onsubmit="return submitWithGeo(this,event)">
+<form id="exitForm" method="POST" action="index.php?page=pointage_sortie" onsubmit="return handlePointageSubmit(this,event,'Sortie')">
     <input type="hidden" name="lat" />
     <input type="hidden" name="lng" />
 
@@ -356,7 +383,6 @@ Suivi détaillé de vos pointages
 
 
 </div>
-
 
 
 
@@ -462,7 +488,7 @@ Absent
 <?php else: ?>
 <tr>
 <td colspan="4" class="p-6 text-center text-slate-500">
-Aucun pointage trouvÃ©.
+Aucun pointage trouvé.
 </td>
 </tr>
 <?php endif; ?>
@@ -519,6 +545,9 @@ Suivant
 const SCHOOL_LAT = parseFloat("<?= $schoolLatPHP ?>");
 const SCHOOL_LNG = parseFloat("<?= $schoolLngPHP ?>");
 const SCHOOL_RADIUS = parseInt("<?= $schoolRadiusPHP ?>", 10);
+const IS_HOLIDAY_TODAY = <?= $isHolidayToday ? 'true' : 'false' ?>;
+const HOLIDAY_NAME = "<?= htmlspecialchars($holidayName, ENT_QUOTES) ?>";
+const HAS_COURSE_TODAY = <?= $hasCourseToday ? 'true' : 'false' ?>;
 
 function toRad(v){return v*Math.PI/180;}
 function haversineDistance(lat1, lon1, lat2, lon2){
@@ -544,8 +573,45 @@ function closeDistanceModal(){
     document.getElementById('distanceModal').classList.add('hidden');
 }
 
-function submitWithGeo(form, event){
+function showHolidayModal(type){
+    document.getElementById('holidayType').textContent = type;
+    document.getElementById('holidayNameDisplay').textContent = HOLIDAY_NAME;
+    document.getElementById('holidayModal').classList.remove('hidden');
+    document.getElementById('holidayModal').classList.add('flex');
+}
+
+function closeHolidayModal(){
+    document.getElementById('holidayModal').classList.remove('flex');
+    document.getElementById('holidayModal').classList.add('hidden');
+}
+
+function showNoCourseModal(type){
+    document.getElementById('noCourseType').textContent = type;
+    document.getElementById('noCourseModal').classList.remove('hidden');
+    document.getElementById('noCourseModal').classList.add('flex');
+}
+
+function closeNoCourseModal(){
+    document.getElementById('noCourseModal').classList.remove('flex');
+    document.getElementById('noCourseModal').classList.add('hidden');
+}
+
+function handlePointageSubmit(form, event, type){
     event.preventDefault();
+
+    // Si aujourd'hui est un jour férié, afficher la modal
+    if (IS_HOLIDAY_TODAY) {
+        showHolidayModal(type);
+        return false;
+    }
+
+    // Si aujourd'hui n'est pas un jour de cours, afficher la modal
+    if (!HAS_COURSE_TODAY) {
+        showNoCourseModal(type);
+        return false;
+    }
+
+    // Sinon procéder normalement avec la géolocalisation
     if (!navigator.geolocation){
         alert('Votre navigateur ne supporte pas la géolocalisation.');
         return false;
@@ -594,5 +660,41 @@ function confirmDistanceAndSubmit(){
             <button onclick="closeDistanceModal()" class="px-4 py-2 border rounded-lg">Fermer</button>
             <button id="distanceConfirm" onclick="confirmDistanceAndSubmit()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg" disabled>Confirmer</button>
         </div>
+    </div>
+</div>
+
+<!-- Holiday modal -->
+<div id="holidayModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl p-6 max-w-md w-full text-center">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="bi bi-calendar-x-fill text-red-600 text-3xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-red-700 mb-2">Pointage non autorisé</h3>
+        <p class="text-gray-600 mb-4">
+            Aujourd'hui (<strong id="holidayNameDisplay"></strong>) est un jour férié.
+            <br>
+            Le pointage (<span id="holidayType" class="font-semibold"></span>) n'est pas autorisé.
+        </p>
+        <button onclick="closeHolidayModal()" class="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition">
+            Fermer
+        </button>
+    </div>
+</div>
+
+<!-- No course modal -->
+<div id="noCourseModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl p-6 max-w-md w-full text-center">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="bi bi-journal-x text-red-600 text-3xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-red-700 mb-2">Pointage non autorisé</h3>
+        <p class="text-gray-600 mb-4">
+            Aucun cours n'est prévu aujourd'hui dans votre emploi du temps.
+            <br>
+            Le pointage (<span id="noCourseType" class="font-semibold"></span>) n'est pas autorisé.
+        </p>
+        <button onclick="closeNoCourseModal()" class="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition">
+            Fermer
+        </button>
     </div>
 </div>

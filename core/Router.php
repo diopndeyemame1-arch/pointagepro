@@ -349,7 +349,13 @@ case 'list_presence':
     require_once __DIR__ . '/../app/Views/qrCode/qrcode_etu.php';
 
 break;
-
+           // ======================
+           // Emploi du temps
+           // ======================
+               case 'emploi_temps':
+                  require_once __DIR__ . '/../app/Views/emploi_temps/emploi_temps.php';
+                  break;
+        
             
 
 
@@ -504,10 +510,10 @@ case 'delete_cohort':
                 require_once __DIR__ . '/../app/Views/settings/parametre.php';
                 break;
 
-            default:
-                http_response_code(404);
-                echo "<h2>404 - Page introuvable</h2>";
-                break;
+        default:
+            http_response_code(404);
+            echo "<h2>404 - Page introuvable</h2>";
+            break;
         }
     }
 }

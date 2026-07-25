@@ -125,13 +125,7 @@ if ($todayAttendance) {
     }
 }
 
-if (!$todayAttendance) {
-    $activityTitle = 'Pointer l\'entree';
-    $activitySubtitle = 'Votre pointage du jour est en attente';
-} elseif (empty($todayAttendance['check_out'])) {
-    $activityTitle = 'Pointer la sortie';
-    $activitySubtitle = 'Entree deja enregistree aujourd\'hui';
-} elseif ($nextSchedule) {
+if ($nextSchedule) {
     $activityTitle = 'Prochain cours';
     $activitySubtitle = $nextSchedule['day'] . ' de ' . $nextSchedule['start_time'] . ' a ' . $nextSchedule['end_time'];
 } else {
@@ -141,6 +135,7 @@ if (!$todayAttendance) {
 
 $qrModel = new EtudiantModel($pdo);
 $qrCode = $qrModel->generateQrCode($userId);
+$qrDisplayPath = $qrCode ?: 'https://ui-avatars.com/api/?name=QR&background=1E4F86&color=fff&size=200';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -568,7 +563,7 @@ Mon QR Code
 <div class="bg-slate-50 rounded-2xl p-5">
 
 
-<img src="<?= htmlspecialchars($qrCode) ?>"
+<img src="<?= htmlspecialchars($qrDisplayPath) ?>"
 
 class="mx-auto rounded-xl shadow">
 
