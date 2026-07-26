@@ -51,6 +51,7 @@ class Attendance
         AND LOWER(cs.day) = LOWER(?)
 
     WHERE u.role = 'etudiant'
+      AND u.is_active = true
 
     ORDER BY u.firstname ASC
     LIMIT ? OFFSET ?
@@ -101,6 +102,7 @@ class Attendance
                 ON cs.cohort_id = u.cohort_id
                 AND LOWER(cs.day) = LOWER(?)
             WHERE u.role = 'etudiant'
+              AND u.is_active = true
         ");
         $stmt->execute([$todayDayName]);
         return $stmt->fetchColumn();

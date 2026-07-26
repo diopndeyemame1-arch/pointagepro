@@ -44,7 +44,6 @@ require_once '../../../config/database.php';
 
     $pdo->commit();
 
-    header("Location: /index.php?page=departments");
-exit;
+    header("Location:index.php?page=departments");
     exit;
 
