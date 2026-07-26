@@ -225,24 +225,53 @@ class Attendance
 
     /**
      * Mark that the absence warning has been sent for a student.
+     * Uses audit_logs table instead of a column on users.
      */
     public function markAbsenceWarningSent($userId)
     {
-        $stmt = $this->pdo->prepare("
-            UPDATE users SET absence_warning_sent = true WHERE id = ?
-        ");
-        return $stmt->execute([$userId]);
+        if (function_exists('addAudit')) {
+            addAudit($this->pdo, 'SEND', 'absence_warning', $userId);
+            return true;
+        }
+        // Fallback: direct insert into audit_logs
+        try {
+            $userIdSession = $_SESSION['user_id'] ?? null;
+            $stmt = $this->pdo->prepare("
+                INSERT INTO audit_logs
+                (user_id, action, entity, entity_id, ip)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            return $stmt->execute([
+                $userIdSession,
+                'SEND',
+                'absence_warning',
+                $userId,
+                $_SERVER['REMOTE_ADDR'] ?? null
+            ]);
+        } catch (Throwable $e) {
+            error_log('markAbsenceWarningSent failed: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
-     * Check if the absence warning has already been sent for a student.
+     * Check if the absence warning has already been sent for a student this month.
+     * Uses audit_logs table instead of a column on users.
      */
     public function hasAbsenceWarningBeenSent($userId)
     {
+        $monthStart = date('Y-m-01') . ' 00:00:00';
         $stmt = $this->pdo->prepare("
-            SELECT absence_warning_sent FROM users WHERE id = ?
+            SELECT COUNT(*) FROM audit_logs 
+            WHERE entity = 'absence_warning' 
+            AND action = 'SEND'
+            AND entity_id = :user_id
+            AND created_at >= :month_start
         ");
-        $stmt->execute([$userId]);
-        return (bool) $stmt->fetchColumn();
+        $stmt->execute([
+            'user_id' => $userId,
+            'month_start' => $monthStart
+        ]);
+        return $stmt->fetchColumn() > 0;
     }
 }
