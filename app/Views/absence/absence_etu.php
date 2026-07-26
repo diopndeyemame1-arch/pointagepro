@@ -283,7 +283,7 @@ Consultez et gérez les demandes d'absence des étudiants en temps réel.
     
                     <input
                         type="date"
-                        class="w-full border rounded-xl px-4 py-3" name="date_debut">
+                        class="w-full border rounded-xl px-4 py-3" name="date_debut  min="<?= date('Y-m-d') ?>" required">
                 </div>
     
                 <!-- Date fin -->
@@ -295,7 +295,7 @@ Consultez et gérez les demandes d'absence des étudiants en temps réel.
     
                     <input
                         type="date"
-                        class="w-full border rounded-xl px-4 py-3" name="date_fin">
+                        class="w-full border rounded-xl px-4 py-3" name="date_fin"  min="<?= date('Y-m-d') ?>" required>
                 </div>
             </div>
             <!-- Motif -->
