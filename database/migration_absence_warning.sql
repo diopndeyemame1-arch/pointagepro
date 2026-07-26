@@ -1,2 +1,8 @@
--- Add column to track if we already sent a 3-absence warning email
-ALTER TABLE public.users ADD COLUMN IF NOT EXISTS absence_warning_sent BOOLEAN DEFAULT false;
+-- Migration remplacée : plus besoin de colonne sur users
+-- On utilise la table audit_logs déjà existante pour tracker les envois
+-- Voir app/Helpers/AbsenceWarningHelper.php
+-- 
+-- Documentation : Utiliser audit_logs avec :
+--   entity = 'absence_warning'
+--   action = 'SEND'
+--   entity_id = UUID de l'utilisateur
