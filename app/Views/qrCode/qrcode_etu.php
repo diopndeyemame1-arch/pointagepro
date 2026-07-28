@@ -370,6 +370,28 @@ window.addEventListener("load", function(){
                     dernierQr = decodedText;
 
                     try {
+                        // Obtenir la position GPS
+                        let lat = '';
+                        let lng = '';
+                        try {
+                            const position = await new Promise((resolve, reject) => {
+                                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                                    enableHighAccuracy: true,
+                                    timeout: 5000,
+                                    maximumAge: 0
+                                });
+                            });
+                            lat = position.coords.latitude;
+                            lng = position.coords.longitude;
+                        } catch(e) {
+                            console.log('Geolocalisation non disponible:', e.message);
+                        }
+
+                        let body = "qr_code=" + encodeURIComponent(decodedText);
+                        if (lat && lng) {
+                            body += "&lat=" + encodeURIComponent(lat) + "&lng=" + encodeURIComponent(lng);
+                        }
+
                         const response = await fetch(
                             "/index.php?page=scan_admin_qr",
                             {
@@ -377,7 +399,7 @@ window.addEventListener("load", function(){
                                 headers: {
                                     "Content-Type": "application/x-www-form-urlencoded"
                                 },
-                                body: "qr_code=" + encodeURIComponent(decodedText)
+                                body: body
                             }
                         );
 

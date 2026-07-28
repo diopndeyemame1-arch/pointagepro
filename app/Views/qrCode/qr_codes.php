@@ -145,15 +145,11 @@ QR
 
 
 
-
-
 <!-- ================= KPI ================= -->
 
 
 
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-
-
 
 
 
@@ -206,7 +202,6 @@ flex items-center justify-center">
 
 
 </div>
-
 
 
 
@@ -270,8 +265,6 @@ flex items-center justify-center">
 
 
 
-
-
 <!-- PRESENTS -->
 
 
@@ -322,8 +315,6 @@ flex items-center justify-center">
 
 
 </div>
-
-
 
 
 
@@ -385,11 +376,7 @@ flex">
 
 
 
-
-
 </div>
-
-
 
 
 
@@ -399,8 +386,6 @@ flex">
 
 
 <div class="grid lg:grid-cols-2 gap-8 mb-8">
-
-
 
 
 
@@ -640,8 +625,6 @@ Arrêter
 
 
 
-
-
 </div>
 
 
@@ -651,8 +634,6 @@ Arrêter
 
 
 </div>
-
-
 
 
 
@@ -830,11 +811,7 @@ Aucun scan enregistré
 
 
 
-
-
 </main>
-
-
 
 
 
@@ -907,97 +884,65 @@ qrbox:{ width:350, height:350 }
 
 
 
-
 async function(decodedText){
 
-
-
 // éviter double scan
-
 if(decodedText === dernierQr){
-
 return;
-
 }
-
-
 
 dernierQr = decodedText;
 
-
-
-
-
 try{
-
-
-
-let response = await fetch(
-
-
-"/index.php?page=scan_qr",
-
-
-{
-
-
-method:"POST",
-
-
-headers:{
-
-
-"Content-Type":
-"application/x-www-form-urlencoded"
-
-
-},
-
-
-
-body:
-
-"uuid="+encodeURIComponent(decodedText)
-
-
-
+// Obtenir la position GPS
+let lat = '';
+let lng = '';
+try {
+const position = await new Promise((resolve, reject) => {
+navigator.geolocation.getCurrentPosition(resolve, reject, {
+enableHighAccuracy: true,
+timeout: 5000,
+maximumAge: 0
+});
+});
+lat = position.coords.latitude;
+lng = position.coords.longitude;
+} catch(e) {
+console.log('Geolocalisation non disponible:', e.message);
 }
 
+let body = "uuid="+encodeURIComponent(decodedText);
+if (lat && lng) {
+body += "&lat=" + encodeURIComponent(lat) + "&lng=" + encodeURIComponent(lng);
+}
 
-
-
+let response = await fetch(
+"/index.php?page=scan_qr",
+{
+method:"POST",
+headers:{
+"Content-Type":
+"application/x-www-form-urlencoded"
+},
+body: body
+}
 );
-
-
-
-
 
 let text = await response.text();
 
-
-
-
 let data;
-
-
-
 
 try{
 
-
 data = JSON.parse(text);
-
 
 }
 
 catch(e){
 
-
 console.log(text);
 
-
 document.getElementById("result").innerHTML=
-
 
 `<span class="text-red-600">
 
@@ -1005,20 +950,15 @@ Erreur serveur
 
 </span>`;
 
-
 return;
-
 
 }
 
 
 
-
 if(!data.success){
 
-
 document.getElementById("result").innerHTML=
-
 
 `<span class="text-red-600">
 
@@ -1026,13 +966,9 @@ ${data.message}
 
 </span>`;
 
-
 return;
 
-
 }
-
-
 
 const isLate2 = data.etudiant && data.etudiant.status === "retard";
 
@@ -1059,49 +995,25 @@ document.getElementById("result").innerHTML = resultHtml;
 
 ajouterLigne(data.etudiant);
 
-
-
-
 }
-
-
 
 catch(error){
 
-
-
 console.error(error);
-
-
-
 
 }
 
-
-
-
 },
 
-
-
 (error)=>{
-
-
 
 }
 
 );
 
-
-
-
 });
 
 });
-
-
-
-
 
 
 
@@ -1151,8 +1063,6 @@ console.log(err);
 
 
 });
-
-
 
 
 
