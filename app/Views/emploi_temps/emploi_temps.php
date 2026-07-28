@@ -93,29 +93,29 @@ $totalModules = count($schedules);
 <body>
 <?php require_once __DIR__ . '/../layouts/sidebar.php'; ?>
 
-    <main class="flex-1 ml-64 p-8 bg-slate-100 min-h-screen">
+    <main class="flex-1 lg:ml-64 p-4 md:p-6 lg:p-8 bg-slate-100 min-h-screen">
 
-        <div class="bg-white rounded-2xl shadow-lg p-6">
+        <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
 
             <!-- Header -->
-            <div class="flex justify-between items-center mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
 
                 <div>
-                    <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
+                    <h1 class="text-2xl md:text-3xl font-bold text-slate-800 flex items-center gap-3">
                         <i class="bi bi-calendar3-week text-blue-600"></i>
                         Mon emploi du temps
                     </h1>
 
-                    <p class="text-gray-500 mt-2">
+                    <p class="text-gray-500 mt-2 text-sm md:text-base">
                         Consultez votre planning hebdomadaire.
                     </p>
                 </div>
 
-                <div class="bg-blue-50 px-6 py-4 rounded-xl">
-                    <h3 class="font-bold text-blue-700">
+                <div class="bg-blue-50 px-4 md:px-6 py-3 md:py-4 rounded-xl w-full sm:w-auto">
+                    <h3 class="font-bold text-blue-700 text-sm md:text-base">
                         <?= htmlspecialchars($etudiant['department_name'] ?? 'Département') ?>
                     </h3>
-                    <p class="text-gray-500">
+                    <p class="text-gray-500 text-xs md:text-sm">
                         <?= htmlspecialchars($etudiant['cohort_name'] ?? 'Cohorte') ?>
                     </p>
                 </div>
@@ -125,14 +125,14 @@ $totalModules = count($schedules);
             <!-- Planning -->
             <div class="overflow-x-auto rounded-2xl border">
 
-                <table class="w-full border-collapse">
+                <table class="w-full border-collapse min-w-[400px] sm:min-w-0">
 
                     <thead class="bg-gradient-to-r from-blue-900 to-amber-700 text-white">
 
                         <tr>
-                            <th class="p-4">Jour</th>
-                            <th class="p-4">Horaire</th>
-                            <th class="p-4">Créneaux</th>
+                            <th class="p-3 md:p-4 text-xs md:text-sm">Jour</th>
+                            <th class="p-3 md:p-4 text-xs md:text-sm">Horaire</th>
+                            <th class="p-3 md:p-4 text-xs md:text-sm">Créneaux</th>
                         </tr>
 
                     </thead>
@@ -152,15 +152,15 @@ $totalModules = count($schedules);
                                     <?php foreach ($slots as $index => $slot): ?>
                                         <tr class="hover:bg-blue-50 border-b">
                                             <?php if ($index === 0): ?>
-                                                <td class="p-4 font-semibold" rowspan="<?= count($slots) ?>">
+                                                <td class="p-3 md:p-4 font-semibold text-xs md:text-sm" rowspan="<?= count($slots) ?>">
                                                     <?= htmlspecialchars($day) ?>
                                                 </td>
                                             <?php endif; ?>
-                                            <td class="p-4">
+                                            <td class="p-3 md:p-4 text-xs md:text-sm whitespace-nowrap">
                                                 <?= date('H:i', strtotime($slot['start_time'])) ?> - <?= date('H:i', strtotime($slot['end_time'])) ?>
                                             </td>
-                                            <td class="p-4">
-                                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                                            <td class="p-3 md:p-4">
+                                                <span class="bg-green-100 text-green-700 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm">
                                                     Cours
                                                 </span>
                                             </td>
@@ -177,34 +177,34 @@ $totalModules = count($schedules);
             </div>
 
             <!-- Statistiques -->
-            <div class="grid md:grid-cols-3 gap-6 mt-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-6 md:mt-8">
 
-                <div class="bg-blue-50 rounded-xl p-6">
-                    <i class="bi bi-calendar-check text-3xl text-blue-600"></i>
-                    <h3 class="font-bold text-xl mt-3">
+                <div class="bg-blue-50 rounded-xl p-4 md:p-6">
+                    <i class="bi bi-calendar-check text-2xl md:text-3xl text-blue-600"></i>
+                    <h3 class="font-bold text-lg md:text-xl mt-3">
                         <?= $totalDays ?> jour<?= $totalDays > 1 ? 's' : '' ?>
                     </h3>
-                    <p class="text-gray-500">
+                    <p class="text-gray-500 text-sm md:text-base">
                         Cours cette semaine
                     </p>
                 </div>
 
-                <div class="bg-green-50 rounded-xl p-6">
-                    <i class="bi bi-clock-history text-3xl text-green-600"></i>
-                    <h3 class="font-bold text-xl mt-3">
+                <div class="bg-green-50 rounded-xl p-4 md:p-6">
+                    <i class="bi bi-clock-history text-2xl md:text-3xl text-green-600"></i>
+                    <h3 class="font-bold text-lg md:text-xl mt-3">
                         <?= $totalHours ?> h
                     </h3>
-                    <p class="text-gray-500">
+                    <p class="text-gray-500 text-sm md:text-base">
                         Volume horaire
                     </p>
                 </div>
 
-                <div class="bg-purple-50 rounded-xl p-6">
-                    <i class="bi bi-book text-3xl text-purple-600"></i>
-                    <h3 class="font-bold text-xl mt-3">
+                <div class="bg-purple-50 rounded-xl p-4 md:p-6">
+                    <i class="bi bi-book text-2xl md:text-3xl text-purple-600"></i>
+                    <h3 class="font-bold text-lg md:text-xl mt-3">
                         <?= $totalModules ?> créneau<?= $totalModules > 1 ? 'x' : '' ?>
                     </h3>
-                    <p class="text-gray-500">
+                    <p class="text-gray-500 text-sm md:text-base">
                         Créneaux programmés
                     </p>
                 </div>
