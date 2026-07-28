@@ -244,152 +244,224 @@ Fermer
 <div id="cohortModal"
      class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
 
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-5xl h-[93vh] flex flex-col ">
 
-    <!-- Header -->
-    <div class="flex items-center justify-between px-6 pt-6 pb-4">
-      <h2 class="text-xl font-bold text-gray-800">Nouvelle Cohorte</h2>
+        <!-- HEADER -->
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-600 px-8 py-6">
 
-      <button onclick="document.getElementById('cohortModal').classList.add('hidden')"
-              class="text-gray-400 hover:text-gray-600 text-2xl">
-        &times;
-      </button>
+            <div class="flex justify-between items-center">
+
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <i class="bi bi-people-fill"></i>
+                        Nouvelle Cohorte
+                    </h2>
+
+                    <p class="text-indigo-100 mt-1">
+                        Créez une cohorte et définissez son emploi du temps.
+                    </p>
+                </div>
+
+                <button
+                    onclick="document.getElementById('cohortModal').classList.add('hidden')"
+                    class="text-white text-3xl hover:rotate-90 transition">
+
+                    &times;
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- FORM -->
+        <form method="POST"
+              action="index.php?page=store_cohort"
+              class="flex flex-col flex-1 overflow-hidden">
+
+            <!-- BODY -->
+            <div class="flex-1 overflow-y-auto px-8 py-6 min-h-0">
+
+                <!-- INFORMATIONS -->
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+
+                    <!-- Département -->
+                    <div>
+
+                        <label class="block font-semibold mb-2">
+                            Département
+                        </label>
+
+                        <select
+                            name="department_id"
+                            class="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500">
+
+                            <option value="">
+                                Sélectionner...
+                            </option>
+
+                            <?php
+                            $deps = $pdo->query("SELECT * FROM departments ORDER BY name");
+                            while($d = $deps->fetch(PDO::FETCH_ASSOC)):
+                            ?>
+
+                            <option value="<?= $d['id'] ?>">
+                                <?= htmlspecialchars($d['name']) ?>
+                            </option>
+
+                            <?php endwhile; ?>
+
+                        </select>
+
+                    </div>
+
+                    <!-- Nom -->
+                    <div>
+
+                        <label class="block font-semibold mb-2">
+                            Nom de la cohorte
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Ex: Cohorte 2025A"
+                            class="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500">
+
+                    </div>
+
+                </div>
+
+                <!-- EMPLOI DU TEMPS -->
+                <h3 class="text-xl font-bold mb-5 flex items-center gap-2">
+                    <i class="bi bi-calendar3-week text-indigo-600"></i>
+                    Emploi du temps
+                </h3>
+
+                <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+
+                    <?php
+                    $jours = [
+                        "Lundi",
+                        "Mardi",
+                        "Mercredi",
+                        "Jeudi",
+                        "Vendredi",
+                        "Samedi",
+                        "Dimanche"
+                    ];
+
+                    foreach($jours as $jour):
+                    ?>
+
+                    <div class="bg-gray-50 rounded-2xl border p-5 shadow-sm hover:shadow-md transition">
+
+                        <label class="flex items-center gap-3 cursor-pointer">
+
+                            <input
+                                type="checkbox"
+                                onchange="toggleDay(this,'<?= $jour ?>')"
+                                class="w-5 h-5 text-indigo-600 rounded">
+
+                            <span class="font-bold text-lg">
+                                <?= $jour ?>
+                            </span>
+
+                        </label>
+
+                        <div
+                            id="<?= $jour ?>"
+                            class="hidden mt-5 space-y-4">
+
+                            <div>
+
+                                <label class="text-sm text-gray-500">
+                                    Heure d'entrée
+                                </label>
+
+                                <input
+                                    type="time"
+                                    name="schedule[<?= $jour ?>][start]"
+                                    class="w-full mt-1 border rounded-xl px-4 py-3">
+
+                            </div>
+
+                            <div>
+
+                                <label class="text-sm text-gray-500">
+                                    Heure de sortie
+                                </label>
+
+                                <input
+                                    type="time"
+                                    name="schedule[<?= $jour ?>][end]"
+                                    class="w-full mt-1 border rounded-xl px-4 py-3">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <?php endforeach; ?>
+
+                </div>
+
+                <!-- STATUT -->
+                <div class="mt-8">
+
+                    <label class="block font-semibold mb-2">
+                        Statut
+                    </label>
+
+                    <select
+                        name="status"
+                        class="w-full border rounded-xl px-4 py-3">
+
+                        <option value="active">
+                            🟢 Actif
+                        </option>
+
+                        <option value="inactive">
+                            🟠 Inactif
+                        </option>
+
+                        <option value="archived">
+                            ⚫ Archivé
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="border-t bg-white px-8 py-5 flex justify-end gap-4 shrink-0">
+
+                <button
+                    type="button"
+                    onclick="document.getElementById('cohortModal').classList.add('hidden')"
+                    class="px-6 py-3 border rounded-xl hover:bg-gray-100">
+
+                    Annuler
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl shadow">
+
+                    <i class="bi bi-check-circle me-2"></i>
+                    Créer la cohorte
+
+                </button>
+
+            </div>
+
+        </form>
+
     </div>
-
-    <div class="border-t mx-6"></div>
-
-    <!-- FORM -->
-   <form method="POST"
-      action="index.php?page=store_cohort">
-
-
-      <!-- Département -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
-          Département <span class="text-red-500">*</span>
-        </label>
-
-        <select name="department_id"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
-
-          <option value="">Sélectionner un département...</option>
-
-          <?php
-          $deps = $pdo->query("SELECT * FROM departments ORDER BY name");
-          while ($d = $deps->fetch(PDO::FETCH_ASSOC)):
-          ?>
-            <option value="<?= $d['id'] ?>">
-              <?= htmlspecialchars($d['name']) ?>
-            </option>
-          <?php endwhile; ?>
-
-        </select>
-      </div>
-
-      <!-- Nom cohorte -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
-          Nom cohorte <span class="text-red-500">*</span>
-        </label>
-
-        <input type="text" name="name"
-          placeholder="Ex: Cohorte 2025A"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
-      </div>
-
-      <!-- Jours de cours -->
-      <?php
-      $jours = [
-          "Lundi",
-          "Mardi",
-          "Mercredi",
-          "Jeudi",
-          "Vendredi",
-          "Samedi",
-          "Dimanche"
-      ];
-      
-      foreach($jours as $jour):
-      ?>
-      
-      <div class="border rounded-xl p-4 mb-3">
-      
-          <label class="flex items-center gap-2 font-semibold">
-      
-              <input
-                  type="checkbox"
-                  onchange="toggleDay(this,'<?= $jour ?>')">
-      
-              <?= $jour ?>
-      
-          </label>
-      
-          <div
-              id="<?= $jour ?>"
-              class="hidden mt-3 grid grid-cols-2 gap-3">
-      
-              <div>
-      
-                  <label>Entrée</label>
-      
-                  <input
-                      type="time"
-                      name="schedule[<?= $jour ?>][start]"
-                      class="w-full border rounded-lg p-2">
-      
-              </div>
-      
-              <div>
-      
-                  <label>Sortie</label>
-      
-                  <input
-                      type="time"
-                      name="schedule[<?= $jour ?>][end]"
-                      class="w-full border rounded-lg p-2">
-      
-              </div>
-      
-          </div>
-      
-      </div>
-      
-      <?php endforeach; ?>
-
-
-      <!-- Statut -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-
-        <select name="status"
-          class="w-full border rounded-lg px-3 py-2.5 text-sm">
-
-          <option value="active">Actif</option>
-          <option value="inactive">Inactif</option>
-          <option value="archived">Archivé</option>
-
-        </select>
-      </div>
-
-      <!-- FOOTER -->
-      <div class="flex justify-end gap-3 pt-3 border-t">
-
-        <button type="button"
-          onclick="document.getElementById('cohortModal').classList.add('hidden')"
-          class="px-5 py-2 border rounded-lg">
-          Annuler
-        </button>
-
-        <button type="submit"
-          class="bg-indigo-700 text-white px-5 py-2 rounded-lg">
-          Créer
-        </button>
-
-      </div>
-
-    </form>
-
-  </div>
 
 </div>
 
