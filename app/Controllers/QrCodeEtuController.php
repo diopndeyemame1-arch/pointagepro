@@ -61,13 +61,16 @@ class QrCodeEtuController
         }
 
         $qrCode = trim((string) ($_POST['qr_code'] ?? ''));
+        $userLat = $_POST['lat'] ?? null;
+        $userLng = $_POST['lng'] ?? null;
+
         if ($qrCode !== 'POINTAGE_ADMIN_SCAN') {
             echo json_encode(['success' => false, 'message' => 'Ce QR Code n est pas le QR Code de pointage.'], JSON_UNESCAPED_UNICODE);
             exit;
         }
 
         try {
-            echo json_encode($this->model->markPresentForStudent($student['id']), JSON_UNESCAPED_UNICODE);
+            echo json_encode($this->model->markPresentForStudent($student['id'], $userLat, $userLng), JSON_UNESCAPED_UNICODE);
         } catch (Throwable $e) {
             http_response_code(500);
             echo json_encode(['success' => false, 'message' => 'Impossible d enregistrer le pointage.'], JSON_UNESCAPED_UNICODE);

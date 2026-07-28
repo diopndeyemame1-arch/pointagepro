@@ -99,7 +99,7 @@ class QrCodeModel
         return $this->publicBase . '/uploads/qrcodes/qr_actif.png';
     }
 
-    public function markPresentFromQr($decodedText)
+    public function markPresentFromQr($decodedText, $userLat = null, $userLng = null)
     {
         $userId = $this->extractUserId($decodedText);
         if (!$userId) {
@@ -128,7 +128,7 @@ class QrCodeModel
         $time = date('H:i:s');
 
         require_once __DIR__ . '/AttendanceEligibility.php';
-        $eligibility = (new AttendanceEligibility($this->pdo))->check($student['id'], $date);
+        $eligibility = (new AttendanceEligibility($this->pdo))->check($student['id'], $date, $userLat, $userLng);
 
         if (!$eligibility['allowed']) {
             return [
@@ -188,9 +188,9 @@ class QrCodeModel
         ];
     }
 
-    public function markPresentForStudent($userId)
+    public function markPresentForStudent($userId, $userLat = null, $userLng = null)
     {
-        return $this->markPresentFromQr($this->buildStudentPayload($userId));
+        return $this->markPresentFromQr($this->buildStudentPayload($userId), $userLat, $userLng);
     }
 
     public function getTodayScans($limit = 20)

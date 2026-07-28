@@ -57,6 +57,8 @@ class QrCodeController
         }
 
         $decodedText = $_POST['uuid'] ?? $_POST['qr_code'] ?? '';
+        $userLat = $_POST['lat'] ?? null;
+        $userLng = $_POST['lng'] ?? null;
 
         if (trim((string)$decodedText) === '') {
             echo json_encode([
@@ -67,7 +69,7 @@ class QrCodeController
         }
 
         try {
-            echo json_encode($this->model->markPresentFromQr($decodedText), JSON_UNESCAPED_UNICODE);
+            echo json_encode($this->model->markPresentFromQr($decodedText, $userLat, $userLng), JSON_UNESCAPED_UNICODE);
         } catch (Throwable $e) {
             http_response_code(500);
             echo json_encode([
